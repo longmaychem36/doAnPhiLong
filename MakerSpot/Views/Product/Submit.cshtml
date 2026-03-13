@@ -1,0 +1,138 @@
+@model MakerSpot.ViewModels.SubmitProductViewModel
+
+@{
+    ViewData["Title"] = "Submit Sản Phẩm";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">🚀 Đưa sản phẩm của bạn lên MakerSpot</h2>
+                    <p class="text-muted">Sản phẩm sau khi nộp sẽ ở trạng thái chờ duyệt (Pending).</p>
+                </div>
+
+                <form asp-action="Submit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin cơ bản</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="ProductName" class="form-label fw-semibold"></label>
+                            <input asp-for="ProductName" class="form-control form-control-lg" placeholder="VD: MakerSpot" />
+                            <span asp-validation-for="ProductName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Slug" class="form-label fw-semibold"></label>
+                            <input asp-for="Slug" class="form-control form-control-lg" placeholder="VD: makerspot-app" />
+                            <span asp-validation-for="Slug" class="text-danger small"></span>
+                            <div class="form-text">Đây sẽ là URL sản phẩm của bạn. Chỉ dùng chữ thường, số, dấu gạch ngang.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Tagline" class="form-label fw-semibold"></label>
+                        <input asp-for="Tagline" class="form-control" placeholder="Mô tả ngắn gọn trong 1 câu. VD: Nền tảng chia sẻ sản phẩm số." />
+                        <span asp-validation-for="Tagline" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Mô tả chi tiết về tính năng, lợi ích và lý do bạn tạo ra sản phẩm này..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4">Liên kết & Media</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="LogoUrl" class="form-label fw-semibold"></label>
+                        <input asp-for="LogoUrl" class="form-control" placeholder="https://example.com/logo.png" />
+                        <span asp-validation-for="LogoUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="WebsiteUrl" class="form-label fw-semibold"></label>
+                            <input asp-for="WebsiteUrl" class="form-control" placeholder="https://..." />
+                            <span asp-validation-for="WebsiteUrl" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DemoUrl" class="form-label fw-semibold"></label>
+                            <input asp-for="DemoUrl" class="form-control" placeholder="https://..." />
+                            <span asp-validation-for="DemoUrl" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4">Phân loại</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn chủ đề (Topics)</label>
+                        <div class="row">
+                            @foreach (var topic in Model.AvailableTopics)
+                            {
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="SelectedTopicIds" value="@topic.Value" id="topic_@topic.Value"
+                                               @(Model.SelectedTopicIds.Contains(int.Parse(topic.Value)) ? "checked" : "")>
+                                        <label class="form-check-label" for="topic_@topic.Value">
+                                            @topic.Text
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <span asp-validation-for="SelectedTopicIds" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-5 col-md-4">
+                        <label asp-for="LaunchDate" class="form-label fw-semibold"></label>
+                        <input asp-for="LaunchDate" class="form-control" />
+                        <span asp-validation-for="LaunchDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">Nộp sản phẩm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-generate slug from ProductName
+        $('#ProductName').on('keyup', function() {
+            var val = $(this).val();
+            // Basic simple slugify
+            var slug = val.toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            
+            // Note: If you want proper Vietnamese character replacement, you'd need a more robust slugify function
+            // Simple Vietnamese mapping for demo (optional feature extension):
+            slug = slug.replace(/á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
+            slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
+            slug = slug.replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i');
+            slug = slug.replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o');
+            slug = slug.replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u');
+            slug = slug.replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y');
+            slug = slug.replace(/đ/gi, 'd');
+            
+            if(!$('#Slug').val() || $('#Slug').data('auto')) {
+                $('#Slug').val(slug);
+                $('#Slug').data('auto', true);
+            }
+        });
+
+        $('#Slug').on('keyup', function(){
+             $(this).data('auto', false);
+        });
+    </script>
+}

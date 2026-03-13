@@ -1,0 +1,106 @@
+@model MakerSpot.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="row">
+    <!-- Main Feed -->
+    <div class="col-md-8 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h4 class="fw-bold mb-0">
+                @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                {
+                    <text>Kết quả cho "@Model.SearchQuery"</text>
+                }
+                else if (!string.IsNullOrEmpty(Model.SelectedTopicSlug))
+                {
+                    var topicName = Model.Topics.FirstOrDefault(t => t.Slug == Model.SelectedTopicSlug)?.TopicName;
+                    <text>Chủ đề: @topicName</text>
+                }
+                else
+                {
+                    <text>Sản phẩm nổi bật</text>
+                }
+            </h4>
+            <div class="btn-group" role="group">
+                <a asp-action="Index" asp-route-sort="trending" asp-route-search="@Model.SearchQuery" asp-route-topic="@Model.SelectedTopicSlug" class="btn btn-sm @(Model.SortBy == "trending" ? "btn-primary" : "btn-outline-secondary")">Trending</a>
+                <a asp-action="Index" asp-route-sort="newest" asp-route-search="@Model.SearchQuery" asp-route-topic="@Model.SelectedTopicSlug" class="btn btn-sm @(Model.SortBy == "newest" ? "btn-primary" : "btn-outline-secondary")">Newest</a>
+            </div>
+        </div>
+
+        @if (!Model.Products.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-1"></i>
+                <p class="mt-2">Chưa có sản phẩm nào được phê duyệt.</p>
+            </div>
+        }
+        else
+        {
+            <div class="product-list">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="card product-card mb-3 border-0 shadow-sm">
+                        <div class="card-body p-3 d-flex align-items-center">
+                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId" class="text-decoration-none d-flex flex-grow-1 align-items-center text-dark hover-content">
+                                <img src="@(string.IsNullOrEmpty(product.LogoUrl) ? "/images/default-logo.png" : product.LogoUrl)" alt="@product.ProductName Logo" class="product-logo me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60?text=Logo';" />
+                                <div>
+                                    <h5 class="card-title fw-bold mb-1">@product.ProductName</h5>
+                                    <p class="card-text text-muted mb-1 fs-6">@product.Tagline</p>
+                                    <div class="topic-tags">
+                                        @foreach (var pt in product.ProductTopics)
+                                        {
+                                            <span class="badge bg-light text-secondary border fw-normal me-1 pt-1 pb-1">@pt.Topic.TopicName</span>
+                                        }
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="d-flex flex-column align-items-end ms-3">
+                                <form asp-controller="Product" asp-action="Upvote" method="post" class="mb-2">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                    <!-- Simple upvote button for feed -->
+                                    <button type="submit" class="btn btn-light border btn-upvote d-flex flex-column align-items-center px-3 py-1">
+                                        <i class="bi bi-caret-up-fill text-muted"></i>
+                                        <span class="fw-bold">@product.UpvoteCount</span>
+                                    </button>
+                                </form>
+                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId" class="text-muted text-decoration-none small">
+                                    <i class="bi bi-chat-fill me-1"></i>@product.CommentCount
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Right Sidebar (Topics) -->
+    <div class="col-md-4 pl-md-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-uppercase text-muted" style="letter-spacing: 0.5px; font-size: 0.85rem;">Chủ đề</h6>
+                    @if (!string.IsNullOrEmpty(Model.SelectedTopicSlug))
+                    {
+                        <a asp-action="Index" asp-route-search="@Model.SearchQuery" asp-route-sort="@Model.SortBy" class="text-decoration-none small">Xóa lọc</a>
+                    }
+                </div>
+                
+                <div class="topic-list d-flex flex-wrap gap-2">
+                    @foreach (var topic in Model.Topics)
+                    {
+                        bool isSelected = Model.SelectedTopicSlug == topic.Slug;
+                        <a asp-action="Index" asp-route-topic="@topic.Slug" asp-route-search="@Model.SearchQuery" asp-route-sort="@Model.SortBy" 
+                           class="badge @(isSelected ? "bg-primary text-white border-primary" : "bg-light text-secondary border") text-decoration-none py-2 px-3 fw-normal"
+                           style="font-size: 0.9rem;">
+                            @topic.TopicName
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Custom MakerSpot Styles */
+.product-card {
+    transition: all 0.2s ease-in-out;
+}
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+.product-logo {
+    border: 1px solid #eaeaea;
+}
+
+.btn-upvote {
+    transition: all 0.2s;
+}
+.btn-upvote:hover {
+    border-color: #ff6000 !important;
+}
+.btn-upvote:hover i, .btn-upvote.active i {
+    color: #ff6000 !important;
+}
+.btn-upvote.active {
+    border-color: #ff6000 !important;
+}
+
+.hover-content h5 {
+    transition: color 0.2s;
+}
+.hover-content:hover h5 {
+    color: #ff6000;
+}
+
+.text-primary {
+    color: #ff6000 !important;
+}
+.btn-primary {
+    background-color: #ff6000;
+    border-color: #ff6000;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #e55600 !important;
+    border-color: #e55600 !important;
+}
+.btn-outline-primary {
+    color: #ff6000;
+    border-color: #ff6000;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: #ff6000 !important;
+    border-color: #ff6000 !important;
+    color: #fff !important;
+}
