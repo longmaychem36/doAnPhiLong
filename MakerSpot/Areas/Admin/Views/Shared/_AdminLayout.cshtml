@@ -42,13 +42,13 @@
                     </li>
                     @if (User.Identity!.IsAuthenticated)
                     {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <li class="nav-item d-flex align-items-center me-3">
+                            <span class="nav-link text-light fw-bold">
                                 <i class="bi bi-person-circle me-1"></i>@User.Identity.Name
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="adminDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Auth" asp-action="Logout">Đăng xuất</a></li>
-                            </ul>
+                            </span>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <a class="btn btn-outline-light btn-sm fw-bold" asp-area="" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
                         </li>
                     }
                 </ul>
