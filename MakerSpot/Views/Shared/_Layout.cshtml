@@ -41,11 +41,11 @@
                                     <i class="bi bi-plus-lg me-1"></i>Submit
                                 </a>
                             </li>
-                            @if(User.IsInRole("Admin"))
+                            @if(User.IsInRole("Admin") || User.IsInRole("Moderator"))
                             {
                                 <li class="nav-item me-3">
                                     <a class="btn btn-outline-secondary btn-sm mt-1 fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                                        <i class="bi bi-shield-lock me-1"></i>Admin
+                                        <i class="bi bi-shield-lock me-1"></i>@(User.IsInRole("Admin") ? "Admin" : "Moderation")
                                     </a>
                                 </li>
                             }

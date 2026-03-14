@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MakerSpot.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Moderator")]
     public class ProductsController : Controller
     {
         private readonly MakerSpotContext _context;
