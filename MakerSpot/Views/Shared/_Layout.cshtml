@@ -47,6 +47,11 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" asp-controller="User" asp-action="Profile" asp-route-username="@User.Identity.Name">Hồ sơ của tôi</a></li>
+                                    @if(User.IsInRole("Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item fw-bold text-primary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-shield-lock me-2"></i>Trang Admin</a></li>
+                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">Đăng xuất</a></li>
                                 </ul>

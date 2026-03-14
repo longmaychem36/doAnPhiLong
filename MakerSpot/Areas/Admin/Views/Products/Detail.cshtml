@@ -1,0 +1,134 @@
+@model MakerSpot.Models.Product
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm (Admin)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h1 class="h3 fw-bold mb-0">Chi tiết Sản Phẩm: @Model.ProductName</h1>
+    <a asp-action="Pending" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4 mb-4 mb-md-0">
+        <!-- Logo & Status Card -->
+        <div class="card border-0 shadow-sm text-center p-4">
+            <img src="@(string.IsNullOrEmpty(Model.LogoUrl) ? "/images/default-logo.png" : Model.LogoUrl)" alt="@Model.ProductName Logo" class="rounded mx-auto mb-3 border object-fit-cover" style="width: 120px; height: 120px;" onerror="this.src='https://via.placeholder.com/120?text=Logo';"/>
+            <h4 class="fw-bold mb-1">@Model.ProductName</h4>
+            <p class="text-muted small mb-3">@@@Model.Slug</p>
+
+            <div class="mb-4">
+                <span class="fw-bold d-block mb-2 text-muted">Trạng thái hiện tại:</span>
+                @switch (Model.Status)
+                {
+                    case "Approved":
+                        <div class="alert alert-success py-2 mb-0 fw-bold border-0"><i class="bi bi-check-circle-fill me-2"></i>Approved</div>
+                        break;
+                    case "Pending":
+                        <div class="alert alert-warning py-2 mb-0 fw-bold border-0 text-dark"><i class="bi bi-hourglass-split me-2"></i>Pending</div>
+                        break;
+                    case "Rejected":
+                        <div class="alert alert-danger py-2 mb-0 fw-bold border-0"><i class="bi bi-x-circle-fill me-2"></i>Rejected</div>
+                        break;
+                    case "Hidden":
+                        <div class="alert alert-secondary py-2 mb-0 fw-bold border-0"><i class="bi bi-eye-slash-fill me-2"></i>Hidden</div>
+                        break;
+                }
+            </div>
+
+            <!-- Approve Actions directly in details -->
+            <div class="d-grid gap-2">
+                @if (Model.Status != "Approved")
+                {
+                    <form asp-action="UpdateStatus" method="post" class="d-grid">
+                        <input type="hidden" name="id" value="@Model.ProductId" />
+                        <input type="hidden" name="status" value="Approved" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <button type="submit" class="btn btn-success fw-bold"><i class="bi bi-check-circle me-2"></i>Duyệt ngay</button>
+                    </form>
+                }
+                @if (Model.Status != "Rejected")
+                {
+                    <form asp-action="UpdateStatus" method="post" class="d-grid">
+                        <input type="hidden" name="id" value="@Model.ProductId" />
+                        <input type="hidden" name="status" value="Rejected" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <button type="submit" class="btn btn-outline-danger fw-bold"><i class="bi bi-x-circle me-2"></i>Từ chối</button>
+                    </form>
+                }
+                 @if (Model.Status != "Pending")
+                {
+                    <form asp-action="UpdateStatus" method="post" class="d-grid">
+                        <input type="hidden" name="id" value="@Model.ProductId" />
+                        <input type="hidden" name="status" value="Pending" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <button type="submit" class="btn btn-outline-warning text-dark fw-bold"><i class="bi bi-hourglass-split me-2"></i>Trả về Pending</button>
+                    </form>
+                }
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin chung</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3 fw-semibold text-muted">Tagline</div>
+                    <div class="col-sm-9">@Model.Tagline</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3 fw-semibold text-muted">Mô tả chi tiết</div>
+                    <div class="col-sm-9"><p style="white-space: pre-line;">@Model.Description</p></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3 fw-semibold text-muted">Người đăng</div>
+                    <div class="col-sm-9">
+                        <a href="/@Model.User.Username" target="_blank" class="text-decoration-none">
+                            <strong>@Model.User.FullName</strong> (@@@Model.User.Username)
+                        </a> 
+                        <span class="text-muted small">vào lúc @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-sm-3 fw-semibold text-muted">Chủ đề (Topics)</div>
+                    <div class="col-sm-9">
+                        @if (Model.ProductTopics != null && Model.ProductTopics.Any())
+                        {
+                            @foreach (var pt in Model.ProductTopics)
+                            {
+                                <span class="badge bg-light text-secondary border me-1 fw-normal">@pt.Topic.TopicName</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không có chủ đề</span>
+                        }
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Liên kết</h5>
+                <div class="row mb-2">
+                    <div class="col-sm-3 fw-semibold text-muted">Website</div>
+                    <div class="col-sm-9">
+                        <a href="@Model.WebsiteUrl" target="_blank">@Model.WebsiteUrl</a>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.DemoUrl))
+                {
+                    <div class="row mb-2">
+                        <div class="col-sm-3 fw-semibold text-muted">Demo Video</div>
+                        <div class="col-sm-9">
+                            <a href="@Model.DemoUrl" target="_blank">@Model.DemoUrl</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
