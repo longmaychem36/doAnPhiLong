@@ -1,0 +1,66 @@
+@model IEnumerable<MakerSpot.Models.User>
+
+@{
+    ViewData["Title"] = "Quản lý Users";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h1 class="h3 fw-bold mb-0"><i class="bi bi-people me-2"></i>Quản lý Users</h1>
+    <span class="badge bg-primary fs-6">@Model.Count() users</span>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-muted">#@user.UserId</td>
+                        <td>
+                            <a asp-area="" asp-controller="User" asp-action="Profile" asp-route-username="@user.Username" target="_blank" class="text-decoration-none fw-bold">
+                                @@@user.Username
+                            </a>
+                        </td>
+                        <td>@user.FullName</td>
+                        <td class="text-muted">@user.Email</td>
+                        <td>
+                            @foreach (var ur in user.UserRoles)
+                            {
+                                var badgeClass = ur.Role.RoleName switch
+                                {
+                                    "Admin" => "bg-danger",
+                                    "Moderator" => "bg-warning text-dark",
+                                    _ => "bg-secondary"
+                                };
+                                <span class="badge @badgeClass me-1">@ur.Role.RoleName</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.IsActive)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inactive</span>
+                            }
+                        </td>
+                        <td class="text-muted small">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+@model MakerSpot.ViewModels.CollectionFormViewModel
+
+@{
+    ViewData["Title"] = Model.CollectionId.HasValue ? "Sửa Collection" : "Tạo Collection mới";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-4">@ViewData["Title"]</h4>
+                <form asp-action="@(Model.CollectionId.HasValue ? "Edit" : "Create")" asp-route-id="@Model.CollectionId" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CollectionName" class="form-label fw-semibold"></label>
+                        <input asp-for="CollectionName" class="form-control" placeholder="VD: Tools yêu thích" />
+                        <span asp-validation-for="CollectionName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả ngắn về collection này..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input asp-for="IsPublic" class="form-check-input" />
+                        <label asp-for="IsPublic" class="form-check-label">Công khai (mọi người có thể xem)</label>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-bold">@(Model.CollectionId.HasValue ? "Cập nhật" : "Tạo Collection")</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -53,5 +53,11 @@ namespace MakerSpot.Models
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
         public ICollection<ProductMaker> ProductMakers { get; set; } = new List<ProductMaker>();
+        
+        // Phase 4: Followers, Collections, Notifications
+        public ICollection<Follower> Followers { get; set; } = new List<Follower>(); // Người follow mình
+        public ICollection<Follower> Following { get; set; } = new List<Follower>(); // Mình follow ai
+        public ICollection<Collection> Collections { get; set; } = new List<Collection>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

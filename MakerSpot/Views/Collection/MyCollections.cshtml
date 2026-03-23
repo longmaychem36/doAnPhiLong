@@ -1,0 +1,54 @@
+@model IEnumerable<MakerSpot.Models.Collection>
+
+@{
+    ViewData["Title"] = "Collections của tôi";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h4 class="fw-bold mb-0"><i class="bi bi-collection me-2"></i>Collections của tôi</h4>
+            <a asp-action="Create" class="btn btn-primary btn-sm fw-bold"><i class="bi bi-plus-lg me-1"></i>Tạo mới</a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center text-muted py-5 border rounded bg-light">
+                <i class="bi bi-collection fs-1"></i>
+                <p class="mt-2">Bạn chưa tạo collection nào.</p>
+                <a asp-action="Create" class="btn btn-primary mt-2">Tạo Collection đầu tiên</a>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var col in Model)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <a asp-action="Detail" asp-route-id="@col.CollectionId" class="text-decoration-none text-dark">
+                                    <h6 class="fw-bold mb-1"><i class="bi bi-collection me-1"></i>@col.CollectionName</h6>
+                                    <p class="text-muted small mb-2">@col.Description</p>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small">@col.CollectionItems.Count sản phẩm</span>
+                                    <div>
+                                        @if (!col.IsPublic)
+                                        {
+                                            <span class="badge bg-secondary small me-1"><i class="bi bi-lock"></i> Riêng tư</span>
+                                        }
+                                        <a asp-action="Edit" asp-route-id="@col.CollectionId" class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil"></i></a>
+                                        <form asp-action="Delete" asp-route-id="@col.CollectionId" method="post" class="d-inline" onsubmit="return confirm('Bạn chắc chắn muốn xóa collection này?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

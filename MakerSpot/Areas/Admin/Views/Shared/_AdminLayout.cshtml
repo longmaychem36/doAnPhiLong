@@ -72,11 +72,19 @@
                                 <i class="bi bi-clock-history me-2"></i> Sản phẩm chờ duyệt
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="Admin" asp-controller="Products" asp-action="Index">
-                                <i class="bi bi-box-seam me-2"></i> Tất cả sản phẩm
-                            </a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                                    <i class="bi bi-box-seam me-2"></i> Tất cả sản phẩm
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                                    <i class="bi bi-people me-2"></i> Quản lý Users
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </nav>

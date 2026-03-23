@@ -26,9 +26,10 @@ namespace MakerSpot.Controllers
                 .Include(p => p.ProductMakers).ThenInclude(pm => pm.User)
                 .Include(p => p.Comments.Where(c => c.IsDeleted == false && c.ParentCommentId == null).OrderByDescending(c => c.CreatedAt))
                     .ThenInclude(c => c.User)
-                .Include(p => p.Comments.Where(c => c.IsDeleted == false && c.ParentCommentId == null))
+                .Include(p => p.Comments.Where(c => c.IsDeleted == false && c.ParentCommentId == null).OrderByDescending(c => c.CreatedAt))
                     .ThenInclude(c => c.Replies.Where(r => r.IsDeleted == false).OrderBy(r => r.CreatedAt))
                         .ThenInclude(r => r.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null || product.Status != "Approved")
@@ -36,12 +37,12 @@ namespace MakerSpot.Controllers
                 return NotFound();
             }
 
-            // Increment ViewCount
-            product.ViewCount++;
-            await _context.SaveChangesAsync();
+            // Increment ViewCount separately to avoid tracking conflict
+            await _context.Products.Where(p => p.ProductId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.ViewCount, p => p.ViewCount + 1));
 
             bool hasUpvoted = false;
-            if (User.Identity!.IsAuthenticated)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (int.TryParse(userIdStr, out var userId))
@@ -55,6 +56,19 @@ namespace MakerSpot.Controllers
                 Product = product,
                 HasUpvoted = hasUpvoted
             };
+
+            // Load current user's collections for 'Add to Collection' dropdown
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var uidStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(uidStr, out var uid))
+                {
+                    vm.UserCollections = await _context.Collections
+                        .Where(c => c.UserId == uid)
+                        .OrderBy(c => c.CollectionName)
+                        .ToListAsync();
+                }
+            }
 
             return View(vm);
         }
@@ -87,6 +101,26 @@ namespace MakerSpot.Controllers
 
             // Trigger will handle UpvoteCount update! So just save.
             await _context.SaveChangesAsync();
+
+            // Create notification for product owner (only on new upvote, i.e. upvote was null before adding)
+            if (upvote == null)
+            {
+                var product = await _context.Products.AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.ProductId == productId);
+                if (product != null && product.UserId != userId)
+                {
+                    var currentUser = await _context.Users.AsNoTracking()
+                        .FirstOrDefaultAsync(u => u.UserId == userId);
+                    _context.Notifications.Add(new Notification
+                    {
+                        UserId = product.UserId,
+                        Type = "NewUpvote",
+                        ReferenceId = productId,
+                        Message = $"{currentUser!.FullName} vừa upvote sản phẩm {product.ProductName}."
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -121,6 +155,21 @@ namespace MakerSpot.Controllers
             
             // Trigger handles CommentCount update.
             await _context.SaveChangesAsync();
+
+            // Create notification for product owner
+            var product = await _context.Products.FindAsync(productId);
+            if (product != null && product.UserId != userId)
+            {
+                var currentUser = await _context.Users.FindAsync(userId);
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = product.UserId,
+                    Type = "NewComment",
+                    ReferenceId = productId,
+                    Message = $"{currentUser!.FullName} vừa bình luận trên sản phẩm {product.ProductName}."
+                });
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction("Detail", new { id = productId });
         }

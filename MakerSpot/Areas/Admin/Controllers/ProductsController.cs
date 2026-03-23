@@ -16,7 +16,8 @@ namespace MakerSpot.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/Products (All Products)
+        // GET: Admin/Products (All Products) - Admin Only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var products = await _context.Products

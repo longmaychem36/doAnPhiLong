@@ -215,5 +215,37 @@
                 </div>
             </div>
         </div>
+
+        <!-- Add to Collection Widget -->
+        @if (User.Identity!.IsAuthenticated && Model.UserCollections.Any())
+        {
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3 text-uppercase text-muted" style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="bi bi-collection me-1"></i>Lưu vào Collection</h6>
+                    <form asp-controller="Collection" asp-action="AddItem" method="post">
+                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <div class="input-group">
+                            <select name="collectionId" class="form-select form-select-sm">
+                                @foreach (var col in Model.UserCollections)
+                                {
+                                    <option value="@col.CollectionId">@col.CollectionName</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Thêm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+        else if (User.Identity.IsAuthenticated)
+        {
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4 text-center">
+                    <p class="text-muted small mb-2">Bạn chưa có collection nào.</p>
+                    <a asp-controller="Collection" asp-action="Create" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Tạo Collection</a>
+                </div>
+            </div>
+        }
     </div>
 </div>

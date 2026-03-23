@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MakerSpot.Models;
 using MakerSpot.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace MakerSpot.Controllers
             _context = context;
         }
 
-        [Route("@@{username}")] // Friendly URL like /@namnguyen or just /User/Profile?username=namnguyen based on routing
+        [Route("@@{username}")]
         public async Task<IActionResult> Profile(string username)
         {
             if (string.IsNullOrWhiteSpace(username)) return NotFound();
@@ -24,7 +25,6 @@ namespace MakerSpot.Controllers
 
             if (user == null || !user.IsActive) return NotFound();
 
-            // Submitted Products (Includes Pending if viewing own profile, otherwise only Approved)
             var isOwnProfile = User.Identity!.IsAuthenticated && User.Identity.Name == username;
             
             var submittedQuery = _context.Products
@@ -40,7 +40,6 @@ namespace MakerSpot.Controllers
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            // Upvoted Products (Only Approved)
             var upvotedProducts = await _context.ProductUpvotes
                 .Include(up => up.Product)
                     .ThenInclude(p => p.ProductTopics).ThenInclude(pt => pt.Topic)
@@ -49,11 +48,38 @@ namespace MakerSpot.Controllers
                 .Select(up => up.Product)
                 .ToListAsync();
 
+            // Phase 4: Follower counts
+            var followerCount = await _context.Followers.CountAsync(f => f.FollowingId == user.UserId);
+            var followingCount = await _context.Followers.CountAsync(f => f.FollowerId == user.UserId);
+
+            bool isFollowing = false;
+            if (User.Identity.IsAuthenticated && !isOwnProfile)
+            {
+                var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                isFollowing = await _context.Followers.AnyAsync(f => f.FollowerId == currentUserId && f.FollowingId == user.UserId);
+            }
+
+            // Phase 4: Public collections (or all if own profile)
+            var collectionsQuery = _context.Collections
+                .Include(c => c.CollectionItems)
+                .Where(c => c.UserId == user.UserId);
+
+            if (!isOwnProfile)
+            {
+                collectionsQuery = collectionsQuery.Where(c => c.IsPublic);
+            }
+
+            var collections = await collectionsQuery.OrderByDescending(c => c.CreatedAt).ToListAsync();
+
             var vm = new UserProfileViewModel
             {
                 User = user,
                 SubmittedProducts = submittedProducts,
-                UpvotedProducts = upvotedProducts
+                UpvotedProducts = upvotedProducts,
+                FollowerCount = followerCount,
+                FollowingCount = followingCount,
+                IsFollowing = isFollowing,
+                Collections = collections
             };
 
             return View(vm);

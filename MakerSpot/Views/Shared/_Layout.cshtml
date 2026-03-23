@@ -43,12 +43,22 @@
                             </li>
                             @if(User.IsInRole("Admin") || User.IsInRole("Moderator"))
                             {
-                                <li class="nav-item me-3">
+                                <li class="nav-item me-2">
                                     <a class="btn btn-outline-secondary btn-sm mt-1 fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                                         <i class="bi bi-shield-lock me-1"></i>@(User.IsInRole("Admin") ? "Admin" : "Moderation")
                                     </a>
                                 </li>
                             }
+                            <li class="nav-item d-flex align-items-center me-2">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index" title="Thông báo">
+                                    <i class="bi bi-bell fs-5"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center me-2">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Collection" asp-action="MyCollections" title="Collections">
+                                    <i class="bi bi-collection fs-5"></i>
+                                </a>
+                            </li>
                             <li class="nav-item d-flex align-items-center me-3">
                                 <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="User" asp-action="Profile" asp-route-username="@User.Identity.Name">
                                     <i class="bi bi-person-circle me-1"></i>@User.Identity.Name

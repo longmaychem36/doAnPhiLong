@@ -1,0 +1,87 @@
+@model MakerSpot.Models.Collection
+
+@{
+    ViewData["Title"] = Model.CollectionName;
+    bool isOwner = ViewBag.IsOwner == true;
+}
+
+<div class="row mt-4 mb-5">
+    <div class="col-md-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-collection me-2"></i>@Model.CollectionName</h3>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="text-muted mb-0">@Model.Description</p>
+                }
+                <small class="text-muted">
+                    Bởi <a asp-controller="User" asp-action="Profile" asp-route-username="@Model.User.Username" class="text-decoration-none">@@@Model.User.Username</a>
+                    · @Model.CollectionItems.Count sản phẩm
+                    @if (!Model.IsPublic)
+                    {
+                        <span class="badge bg-secondary ms-1"><i class="bi bi-lock"></i> Riêng tư</span>
+                    }
+                </small>
+            </div>
+            @if (isOwner)
+            {
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.CollectionId" class="btn btn-outline-primary btn-sm me-1"><i class="bi bi-pencil me-1"></i>Sửa</a>
+                    <form asp-action="Delete" asp-route-id="@Model.CollectionId" method="post" class="d-inline" onsubmit="return confirm('Xóa collection này?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Xóa</button>
+                    </form>
+                </div>
+            }
+        </div>
+
+        @if (!Model.CollectionItems.Any())
+        {
+            <div class="text-center text-muted py-5 border rounded bg-light">
+                <i class="bi bi-box fs-1"></i>
+                <p class="mt-2">Collection này chưa có sản phẩm nào.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var ci in Model.CollectionItems)
+            {
+                var product = ci.Product;
+                <div class="card product-card mb-3 border-0 shadow-sm">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@product.ProductId" class="text-decoration-none d-flex flex-grow-1 align-items-center text-dark">
+                            <img src="@(string.IsNullOrEmpty(product.LogoUrl) ? "/images/default-logo.png" : product.LogoUrl)" alt="Logo" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/60?text=Logo';" />
+                            <div>
+                                <h5 class="card-title fw-bold mb-1">@product.ProductName</h5>
+                                <p class="card-text text-muted mb-1 fs-6">@product.Tagline</p>
+                                <div>
+                                    @if (product.ProductTopics != null)
+                                    {
+                                        @foreach (var pt in product.ProductTopics)
+                                        {
+                                            <span class="badge bg-light text-secondary border fw-normal me-1">@pt.Topic.TopicName</span>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                        <div class="d-flex flex-column align-items-end ms-3">
+                            <span class="btn btn-light border d-flex flex-column align-items-center px-3 py-1 mb-2">
+                                <i class="bi bi-caret-up-fill text-muted"></i>
+                                <span class="fw-bold">@product.UpvoteCount</span>
+                            </span>
+                            @if (isOwner)
+                            {
+                                <form asp-action="RemoveItem" method="post">
+                                    <input type="hidden" name="collectionId" value="@Model.CollectionId" />
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Xóa khỏi collection"><i class="bi bi-x-lg"></i></button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

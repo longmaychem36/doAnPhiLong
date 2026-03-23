@@ -20,6 +20,12 @@ namespace MakerSpot.Models
         public DbSet<Comment> Comments { get; set; } = null!;
         public DbSet<CommentVote> CommentVotes { get; set; } = null!;
 
+        // Phase 4
+        public DbSet<Follower> Followers { get; set; } = null!;
+        public DbSet<Collection> Collections { get; set; } = null!;
+        public DbSet<CollectionItem> CollectionItems { get; set; } = null!;
+        public DbSet<Notification> Notifications { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -129,6 +135,49 @@ namespace MakerSpot.Models
                 .WithMany(u => u.Products)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Phase 4: Followers
+            modelBuilder.Entity<Follower>()
+                .HasKey(f => new { f.FollowerId, f.FollowingId });
+
+            modelBuilder.Entity<Follower>()
+                .HasOne(f => f.FollowerUser)
+                .WithMany(u => u.Following)
+                .HasForeignKey(f => f.FollowerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Follower>()
+                .HasOne(f => f.FollowingUser)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(f => f.FollowingId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Phase 4: Collections
+            modelBuilder.Entity<Collection>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Collections)
+                .HasForeignKey(c => c.UserId);
+
+            // Phase 4: CollectionItems
+            modelBuilder.Entity<CollectionItem>()
+                .HasKey(ci => new { ci.CollectionId, ci.ProductId });
+
+            modelBuilder.Entity<CollectionItem>()
+                .HasOne(ci => ci.Collection)
+                .WithMany(c => c.CollectionItems)
+                .HasForeignKey(ci => ci.CollectionId);
+
+            modelBuilder.Entity<CollectionItem>()
+                .HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Phase 4: Notifications
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId);
         }
     }
 }
