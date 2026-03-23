@@ -30,6 +30,7 @@ namespace MakerSpot.Controllers
 
             var notifications = await _context.Notifications
                 .Where(n => n.UserId == userId)
+                .AsNoTracking()
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(50)
                 .ToListAsync();

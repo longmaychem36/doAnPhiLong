@@ -21,6 +21,7 @@ namespace MakerSpot.Controllers
             if (string.IsNullOrWhiteSpace(username)) return NotFound();
 
             var user = await _context.Users
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null || !user.IsActive) return NotFound();
@@ -29,6 +30,7 @@ namespace MakerSpot.Controllers
             
             var submittedQuery = _context.Products
                 .Include(p => p.ProductTopics).ThenInclude(pt => pt.Topic)
+                .AsNoTracking()
                 .Where(p => p.UserId == user.UserId);
 
             if (!isOwnProfile)
@@ -43,6 +45,7 @@ namespace MakerSpot.Controllers
             var upvotedProducts = await _context.ProductUpvotes
                 .Include(up => up.Product)
                     .ThenInclude(p => p.ProductTopics).ThenInclude(pt => pt.Topic)
+                .AsNoTracking()
                 .Where(up => up.UserId == user.UserId && up.Product.Status == "Approved")
                 .OrderByDescending(up => up.CreatedAt)
                 .Select(up => up.Product)
@@ -62,6 +65,7 @@ namespace MakerSpot.Controllers
             // Phase 4: Public collections (or all if own profile)
             var collectionsQuery = _context.Collections
                 .Include(c => c.CollectionItems)
+                .AsNoTracking()
                 .Where(c => c.UserId == user.UserId);
 
             if (!isOwnProfile)

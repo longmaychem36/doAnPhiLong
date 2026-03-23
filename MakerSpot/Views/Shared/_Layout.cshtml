@@ -12,17 +12,22 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-4 sticky-top">
             <div class="container">
-                <a class="navbar-brand fw-bold text-primary fs-3" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-rocket-takeoff-fill me-2"></i>MakerSpot
+                <a class="navbar-brand fw-bolder fs-3" style="color: #ff6000; letter-spacing: -1px;" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="d-inline-flex justify-content-center align-items-center rounded-circle me-1 text-white" style="width: 32px; height: 32px; background: #ff6000;">
+                        <i class="bi bi-p-circle-fill fs-5 lh-1"></i>
+                    </span> MakerSpot
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 align-items-center ms-3">
                         <li class="nav-item">
-                            <a class="nav-link text-dark fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">Sản phẩm</a>
+                            <a class="nav-link text-secondary fw-medium hover-content" asp-area="" asp-controller="Home" asp-action="Index">Sản phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary fw-medium hover-content" asp-area="" asp-controller="Home" asp-action="Index" asp-route-sort="newest">Khám phá</a>
                         </li>
                     </ul>
                     
@@ -36,45 +41,50 @@
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            <li class="nav-item me-3">
-                                <a class="btn btn-primary btn-sm mt-1 fw-bold" asp-controller="Product" asp-action="Submit">
-                                    <i class="bi bi-plus-lg me-1"></i>Submit
+                            <li class="nav-item me-2 d-flex align-items-center">
+                                <a class="btn btn-outline-secondary btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="border-radius: 20px;" asp-controller="Product" asp-action="Submit">
+                                    <i class="bi bi-plus-lg"></i> Gửi sản phẩm
                                 </a>
                             </li>
                             @if(User.IsInRole("Admin") || User.IsInRole("Moderator"))
                             {
-                                <li class="nav-item me-2">
-                                    <a class="btn btn-outline-secondary btn-sm mt-1 fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                                        <i class="bi bi-shield-lock me-1"></i>@(User.IsInRole("Admin") ? "Admin" : "Moderation")
+                                <li class="nav-item me-2 d-flex align-items-center">
+                                    <a class="btn btn-dark btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                        <i class="bi bi-shield-lock me-1"></i>@(User.IsInRole("Admin") ? "Admin" : "Moderator")
                                     </a>
                                 </li>
                             }
-                            <li class="nav-item d-flex align-items-center me-2">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index" title="Thông báo">
+                            <li class="nav-item d-flex align-items-center ms-2 me-1">
+                                <a class="nav-link text-secondary position-relative hover-content" asp-area="" asp-controller="Notification" asp-action="Index" title="Thông báo">
                                     <i class="bi bi-bell fs-5"></i>
                                 </a>
                             </li>
-                            <li class="nav-item d-flex align-items-center me-2">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Collection" asp-action="MyCollections" title="Collections">
+                            <li class="nav-item d-flex align-items-center me-3">
+                                <a class="nav-link text-secondary hover-content" asp-area="" asp-controller="Collection" asp-action="MyCollections" title="Collections">
                                     <i class="bi bi-collection fs-5"></i>
                                 </a>
                             </li>
-                            <li class="nav-item d-flex align-items-center me-3">
-                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="User" asp-action="Profile" asp-route-username="@User.Identity.Name">
-                                    <i class="bi bi-person-circle me-1"></i>@User.Identity.Name
+                            <li class="nav-item dropdown d-flex align-items-center">
+                                <a class="nav-link dropdown-toggle text-dark fw-semibold d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 14px;">
+                                        @User.Identity.Name.Substring(0, 1).ToUpper()
+                                    </div>
+                                    @User.Identity.Name
                                 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm mt-1 fw-bold" asp-area="" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg form-control" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item py-2" asp-area="" asp-controller="User" asp-action="Profile" asp-route-username="@User.Identity.Name"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger py-2" asp-area="" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                                </ul>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item me-2">
-                                <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="Login">Đăng nhập</a>
+                            <li class="nav-item me-2 d-flex align-items-center">
+                                <a class="nav-link text-secondary fw-semibold hover-content" asp-controller="Auth" asp-action="Login">Sıgn In</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Đăng ký</a>
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="btn btn-primary fw-bold text-white px-3 py-2 rounded-pill shadow-sm" asp-controller="Auth" asp-action="Register">Đăng ký</a>
                             </li>
                         }
                     </ul>
@@ -103,9 +113,14 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-white mt-auto py-3">
-        <div class="container text-center">
-            &copy; 2026 - MakerSpot - Mô phỏng Product Hunt
+    <footer class="border-top footer text-muted bg-white mt-auto py-4">
+        <div class="container d-flex justify-content-between">
+            <span>&copy; @DateTime.Now.Year - MakerSpot</span>
+            <div>
+                <a class="text-muted text-decoration-none me-3" href="#">Về chúng tôi</a>
+                <a class="text-muted text-decoration-none me-3" href="#">Quy định</a>
+                <a class="text-muted text-decoration-none" href="#">Bảo mật</a>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

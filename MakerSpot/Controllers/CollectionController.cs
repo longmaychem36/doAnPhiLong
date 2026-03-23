@@ -31,6 +31,7 @@ namespace MakerSpot.Controllers
 
             var collections = await _context.Collections
                 .Include(c => c.CollectionItems)
+                .AsNoTracking()
                 .Where(c => c.UserId == userId)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
@@ -49,6 +50,7 @@ namespace MakerSpot.Controllers
                     .ThenInclude(ci => ci.Product)
                     .ThenInclude(p => p.ProductTopics)
                     .ThenInclude(pt => pt.Topic)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.CollectionId == id);
 
             if (collection == null) return NotFound();

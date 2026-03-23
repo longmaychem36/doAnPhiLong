@@ -21,6 +21,7 @@ namespace MakerSpot.Areas.Admin.Controllers
             var users = await _context.Users
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
+                .AsNoTracking()
                 .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 html {
   font-size: 14px;
 }
@@ -9,53 +11,92 @@ html {
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color: #333;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #4b5563;
+    background-color: #f9fafb !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #111827;
+    letter-spacing: -0.02em;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(255, 96, 0, 0.25);
+  border-color: #ff6000 !important;
 }
 
 /* Custom MakerSpot Styles */
+.navbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.card {
+    border-radius: 12px;
+    border: 1px solid #f3f4f6 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
 .product-card {
     transition: all 0.2s ease-in-out;
+    border-radius: 12px;
 }
 .product-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    border-color: #e5e7eb !important;
 }
 
 .product-logo {
-    border: 1px solid #eaeaea;
+    border: 1px solid #f3f4f6;
+    border-radius: 10px !important;
+    background: #fff;
+}
+
+/* Base button styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
 }
 
 .btn-upvote {
     transition: all 0.2s;
+    border-color: #e5e7eb !important;
+    background-color: #ffffff !important;
+    color: #6b7280;
+    border-radius: 10px;
 }
 .btn-upvote:hover {
     border-color: #ff6000 !important;
+    color: #ff6000 !important;
+    background-color: #fffaf0 !important;
 }
 .btn-upvote:hover i, .btn-upvote.active i {
     color: #ff6000 !important;
 }
 .btn-upvote.active {
     border-color: #ff6000 !important;
+    color: #ff6000 !important;
+    background-color: #fffaf0 !important;
 }
 
 .hover-content h5 {
-    transition: color 0.2s;
+    transition: color 0.15s;
 }
 .hover-content:hover h5 {
     color: #ff6000;
 }
 
+/* Main Brand Color (Product Hunt Orangeish) */
 .text-primary {
     color: #ff6000 !important;
 }
 .btn-primary {
     background-color: #ff6000;
     border-color: #ff6000;
+    color: white;
 }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: #e55600 !important;
@@ -69,4 +110,35 @@ body {
     background-color: #ff6000 !important;
     border-color: #ff6000 !important;
     color: #fff !important;
+}
+
+/* Badges and Tags */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+}
+.bg-light {
+    background-color: #f3f4f6 !important;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 8px;
+    border-color: #d1d5db;
+    padding: 0.6rem 1rem;
+}
+.form-control:focus {
+    border-color: #ff6000;
+    box-shadow: 0 0 0 3px rgba(255, 96, 0, 0.1);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

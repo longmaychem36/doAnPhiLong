@@ -20,7 +20,8 @@ namespace MakerSpot.Controllers
             var query = _context.Products
                 .Include(p => p.ProductTopics)
                     .ThenInclude(pt => pt.Topic)
-                .Where(p => p.Status == "Approved");
+                .Where(p => p.Status == "Approved")
+                .AsNoTracking();
 
             // Handle Search
             if (!string.IsNullOrWhiteSpace(search))

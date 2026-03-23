@@ -22,6 +22,7 @@ namespace MakerSpot.Areas.Admin.Controllers
         {
             var products = await _context.Products
                 .Include(p => p.User)
+                .AsNoTracking()
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
@@ -34,6 +35,7 @@ namespace MakerSpot.Areas.Admin.Controllers
         {
             var products = await _context.Products
                 .Include(p => p.User)
+                .AsNoTracking()
                 .Where(p => p.Status == "Pending")
                 .OrderBy(p => p.CreatedAt)
                 .ToListAsync();
@@ -50,6 +52,7 @@ namespace MakerSpot.Areas.Admin.Controllers
                 .Include(p => p.ProductTopics).ThenInclude(pt => pt.Topic)
                 .Include(p => p.ProductMedia)
                 .Include(p => p.ProductMakers).ThenInclude(pm => pm.User)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null)
