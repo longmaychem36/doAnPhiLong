@@ -1,112 +1,132 @@
 @model MakerSpot.ViewModels.Admin.DashboardViewModel
-
 @{
-    ViewData["Title"] = "Dashboard Khái Quát";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-4 pb-2 border-bottom">
-    <h1 class="h2 fw-bold">Tổng quan hệ thống</h1>
-</div>
-
-<div class="row mb-5">
-    <div class="col-xl-3 col-sm-6 mb-4 mb-xl-0">
-        <div class="card shadow-sm border-0 bg-primary text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase fw-bold text-white-50">Sản phẩm</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalProducts</h2>
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 h-100" style="background:linear-gradient(135deg,#fff3f2,#fff);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="rounded-2 d-flex align-items-center justify-content-center"
+                         style="width:40px;height:40px;background:var(--ph-orange-light);">
+                        <i class="bi bi-box-seam" style="font-size:1.2rem;color:var(--ph-orange);"></i>
                     </div>
-                    <i class="bi bi-box-seam fs-1 text-white-50"></i>
+                    <span class="badge status-badge status-approved">Tổng</span>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-4 mb-xl-0">
-        <div class="card shadow-sm border-0 bg-warning text-dark h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase fw-bold">Chờ duyệt</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalPendingProducts</h2>
-                    </div>
-                    <i class="bi bi-hourglass-split fs-1 text-dark" style="opacity: 0.5;"></i>
-                </div>
-            </div>
-            @if (Model.TotalPendingProducts > 0)
-            {
-                <div class="card-footer bg-warning border-0 p-0 text-center">
-                    <a asp-controller="Products" asp-action="Pending" class="text-dark fw-bold text-decoration-none d-block py-2" style="background: rgba(0,0,0,0.1);">Xem danh sách <i class="bi bi-arrow-right-circle ms-1"></i></a>
-                </div>
-            }
-        </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-4 mb-sm-0">
-        <div class="card shadow-sm border-0 bg-success text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase fw-bold text-white-50">Người dùng</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalUsers</h2>
-                    </div>
-                    <i class="bi bi-people fs-1 text-white-50"></i>
-                </div>
+                <h2 class="fw-bold mb-0">@Model.TotalProducts</h2>
+                <p class="text-muted mb-0 mt-1" style="font-size:.85rem;">Tổng sản phẩm</p>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-        <div class="card shadow-sm border-0 bg-info text-dark h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase fw-bold">Bình luận</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalComments</h2>
+        <div class="card border-0 h-100" style="background:linear-gradient(135deg,#fefce8,#fff);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="rounded-2 d-flex align-items-center justify-content-center"
+                         style="width:40px;height:40px;background:#fef9c3;">
+                        <i class="bi bi-hourglass-split" style="font-size:1.2rem;color:#ca8a04;"></i>
                     </div>
-                    <i class="bi bi-chat-dots fs-1 text-dark" style="opacity: 0.5;"></i>
+                    @if (Model.TotalPendingProducts > 0)
+                    {
+                        <span class="badge status-badge status-pending">Cần xử lý</span>
+                    }
                 </div>
+                <h2 class="fw-bold mb-0">@Model.TotalPendingProducts</h2>
+                <p class="text-muted mb-0 mt-1" style="font-size:.85rem;">Chờ phê duyệt</p>
+                @if (Model.TotalPendingProducts > 0)
+                {
+                    <a asp-controller="Products" asp-action="Pending" class="btn btn-sm mt-3 fw-semibold w-100"
+                       style="background:#fef9c3;color:#92400e;border:1px solid #fde68a;">
+                        Xem ngay <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 h-100" style="background:linear-gradient(135deg,#f0fdf4,#fff);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="rounded-2 d-flex align-items-center justify-content-center"
+                         style="width:40px;height:40px;background:#dcfce7;">
+                        <i class="bi bi-people" style="font-size:1.2rem;color:#16a34a;"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold mb-0">@Model.TotalUsers</h2>
+                <p class="text-muted mb-0 mt-1" style="font-size:.85rem;">Người dùng</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 h-100" style="background:linear-gradient(135deg,#eff6ff,#fff);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="rounded-2 d-flex align-items-center justify-content-center"
+                         style="width:40px;height:40px;background:#dbeafe;">
+                        <i class="bi bi-chat-dots" style="font-size:1.2rem;color:#2563eb;"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold mb-0">@Model.TotalComments</h2>
+                <p class="text-muted mb-0 mt-1" style="font-size:.85rem;">Bình luận</p>
             </div>
         </div>
     </div>
 </div>
 
-<h4 class="fw-bold mb-3">Sản phẩm chờ duyệt gần đây</h4>
-<div class="card border-0 shadow-sm">
+<!-- Pending products table -->
+<div class="card border-0">
+    <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3 px-4"
+         style="border-radius:12px 12px 0 0!important;">
+        <h6 class="fw-bold mb-0">Sản phẩm chờ duyệt gần đây</h6>
+        <a asp-controller="Products" asp-action="Pending" class="btn btn-sm border fw-semibold" style="font-size:.8rem;">
+            Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th class="ps-4">Sản phẩm</th>
                         <th>Người đăng</th>
                         <th>Ngày nộp</th>
-                        <th class="text-end pe-4">Hành động</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (!Model.RecentPendingProducts.Any())
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-4">Không có sản phẩm nào đang chờ duyệt.</td>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-check2-all d-block mb-2" style="font-size:2rem;color:#d1d5db;"></i>
+                                Không có sản phẩm nào đang chờ duyệt
+                            </td>
                         </tr>
                     }
                     @foreach (var p in Model.RecentPendingProducts)
                     {
                         <tr>
                             <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <img src="@(string.IsNullOrEmpty(p.LogoUrl) ? "/images/default-logo.png" : p.LogoUrl)" class="rounded me-3 border" style="width:40px;height:40px;object-fit:cover;" onerror="this.src='https://via.placeholder.com/40';">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@(string.IsNullOrEmpty(p.LogoUrl) ? "/images/default-logo.png" : p.LogoUrl)"
+                                         class="rounded border" style="width:40px;height:40px;object-fit:cover;"
+                                         onerror="this.src='https://placehold.co/40';">
                                     <div>
-                                        <div class="fw-bold">@p.ProductName</div>
+                                        <div class="fw-semibold" style="font-size:.9rem;">@p.ProductName</div>
                                         <div class="text-muted small">@p.Tagline</div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <a href="/@p.User.Username" target="_blank" class="text-decoration-none">@@@p.User.Username</a>
+                                <a href="/@p.User.Username" target="_blank"
+                                   class="text-decoration-none fw-semibold" style="font-size:.875rem;">@@@p.User.Username</a>
                             </td>
-                            <td>@p.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td class="text-muted" style="font-size:.875rem;">@p.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="text-end pe-4">
-                                <a asp-controller="Products" asp-action="Detail" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-primary">Chi tiết & Duyệt</a>
+                                <a asp-controller="Products" asp-action="Detail" asp-route-id="@p.ProductId"
+                                   class="btn btn-sm btn-primary fw-semibold px-3">Chi tiết & Duyệt</a>
                             </td>
                         </tr>
                     }

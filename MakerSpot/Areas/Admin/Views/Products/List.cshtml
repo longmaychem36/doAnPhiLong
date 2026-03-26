@@ -1,123 +1,142 @@
 @model IEnumerable<MakerSpot.Models.Product>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-4 pb-2 border-bottom">
-    <h1 class="h2 fw-bold">@ViewData["Title"]</h1>
+@{
+    string title = ViewData["Title"]?.ToString() ?? "Danh sách sản phẩm";
+}
+
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <span class="text-muted" style="font-size:.875rem;">@Model.Count() sản phẩm trong danh sách</span>
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="card border-0">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
-                        <th class="ps-4">ID</th>
-                        <th>Sản phẩm</th>
+                        <th class="ps-4" style="width:40%;">Sản phẩm</th>
                         <th>Người đăng</th>
                         <th>Ngày tạo</th>
                         <th>Trạng thái</th>
-                        <th class="text-end pe-4">Hành động</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-5">Chưa có sản phẩm nào.</td>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="bi bi-inbox d-block mb-2" style="font-size:2.5rem;color:#d1d5db;"></i>
+                                <span class="text-muted">Không có sản phẩm nào.</span>
+                            </td>
                         </tr>
                     }
-                    else
+                    @foreach (var item in Model)
                     {
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="ps-4 text-muted">@item.ProductId</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="@(string.IsNullOrEmpty(item.LogoUrl) ? "/images/default-logo.png" : item.LogoUrl)" class="rounded me-3 border" style="width:40px;height:40px;object-fit:cover;" onerror="this.src='https://via.placeholder.com/40';">
-                                        <div>
-                                            <div class="fw-bold">@item.ProductName</div>
-                                            <a href="@item.WebsiteUrl" target="_blank" class="text-muted small text-decoration-none"><i class="bi bi-link-45deg"></i> Link</a>
-                                        </div>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@(string.IsNullOrEmpty(item.LogoUrl) ? "/images/default-logo.png" : item.LogoUrl)"
+                                         class="rounded border flex-shrink-0"
+                                         style="width:42px;height:42px;object-fit:cover;"
+                                         onerror="this.src='https://placehold.co/42';">
+                                    <div class="min-w-0">
+                                        <div class="fw-semibold" style="font-size:.9rem;">@item.ProductName</div>
+                                        <div class="text-muted small text-truncate" style="max-width:240px;">@item.Tagline</div>
                                     </div>
-                                </td>
-                                <td>
-                                    <a href="/@item.User.Username" target="_blank" class="text-decoration-none">@@@item.User.Username</a>
-                                </td>
-                                <td>@item.CreatedAt.ToString("dd/MM/yyyy")<br><small class="text-muted">@item.CreatedAt.ToString("HH:mm")</small></td>
-                                <td>
-                                    @switch (item.Status)
-                                    {
-                                        case "Approved":
-                                            <span class="badge bg-success">Approved</span>
-                                            break;
-                                        case "Pending":
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                            break;
-                                        case "Rejected":
-                                            <span class="badge bg-danger">Rejected</span>
-                                            break;
-                                        case "Hidden":
-                                            <span class="badge bg-secondary">Hidden</span>
-                                            break;
-                                    }
-                                </td>
-                                <td class="text-end pe-4">
-                                    <div class="btn-group">
-                                        <a asp-action="Detail" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-primary">Xem</a>
-                                        <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                            <li><h6 class="dropdown-header">Đổi trạng thái</h6></li>
-                                            @if (item.Status != "Approved")
-                                            {
-                                                <li>
-                                                    <form asp-action="UpdateStatus" method="post">
-                                                        <input type="hidden" name="id" value="@item.ProductId" />
-                                                        <input type="hidden" name="status" value="Approved" />
-                                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                                        <button type="submit" class="dropdown-item text-success"><i class="bi bi-check-circle me-2"></i>Duyệt (Approve)</button>
-                                                    </form>
-                                                </li>
-                                            }
-                                            @if (item.Status != "Pending")
-                                            {
-                                                <li>
-                                                    <form asp-action="UpdateStatus" method="post">
-                                                        <input type="hidden" name="id" value="@item.ProductId" />
-                                                        <input type="hidden" name="status" value="Pending" />
-                                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                                        <button type="submit" class="dropdown-item text-warning"><i class="bi bi-hourglass-split me-2"></i>Về Chờ duyệt (Pending)</button>
-                                                    </form>
-                                                </li>
-                                            }
-                                            @if (item.Status != "Rejected")
-                                            {
-                                                <li>
-                                                    <form asp-action="UpdateStatus" method="post">
-                                                        <input type="hidden" name="id" value="@item.ProductId" />
-                                                        <input type="hidden" name="status" value="Rejected" />
-                                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-x-circle me-2"></i>Từ chối (Reject)</button>
-                                                    </form>
-                                                </li>
-                                            }
-                                            @if (item.Status != "Hidden")
-                                            {
-                                                <li>
-                                                    <form asp-action="UpdateStatus" method="post">
-                                                        <input type="hidden" name="id" value="@item.ProductId" />
-                                                        <input type="hidden" name="status" value="Hidden" />
-                                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                                        <button type="submit" class="dropdown-item text-secondary"><i class="bi bi-eye-slash me-2"></i>Ẩn (Hide)</button>
-                                                    </form>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
+                                </div>
+                            </td>
+                            <td>
+                                <a href="/@item.User.Username" target="_blank"
+                                   class="text-decoration-none" style="font-size:.875rem;color:#374151;">@@@item.User.Username</a>
+                            </td>
+                            <td>
+                                <div style="font-size:.875rem;">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                <div class="text-muted" style="font-size:.78rem;">@item.CreatedAt.ToString("HH:mm")</div>
+                            </td>
+                            <td>
+                                @switch (item.Status)
+                                {
+                                    case "Approved":
+                                        <span class="status-badge status-approved">✓ Approved</span>
+                                        break;
+                                    case "Pending":
+                                        <span class="status-badge status-pending">⏳ Pending</span>
+                                        break;
+                                    case "Rejected":
+                                        <span class="status-badge status-rejected">✗ Rejected</span>
+                                        break;
+                                    case "Hidden":
+                                        <span class="status-badge status-hidden">⊘ Hidden</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a asp-action="Detail" asp-route-id="@item.ProductId"
+                                       class="btn btn-sm border fw-semibold" style="font-size:.8rem;background:#fff;">Xem</a>
+                                    <button type="button" class="btn btn-sm border border-start-0 dropdown-toggle"
+                                            style="background:#fff;" data-bs-toggle="dropdown">
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius:10px;min-width:180px;">
+                                        <li><h6 class="dropdown-header text-muted" style="font-size:.75rem;">Đổi trạng thái</h6></li>
+                                        @if (item.Status != "Approved")
+                                        {
+                                            <li>
+                                                <form asp-action="UpdateStatus" method="post">
+                                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                                    <input type="hidden" name="status" value="Approved" />
+                                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                    <button type="submit" class="dropdown-item py-2" style="color:#15803d;font-size:.875rem;">
+                                                        <i class="bi bi-check-circle me-2"></i>Duyệt (Approve)
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        @if (item.Status != "Pending")
+                                        {
+                                            <li>
+                                                <form asp-action="UpdateStatus" method="post">
+                                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                                    <input type="hidden" name="status" value="Pending" />
+                                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                    <button type="submit" class="dropdown-item py-2" style="color:#a16207;font-size:.875rem;">
+                                                        <i class="bi bi-hourglass-split me-2"></i>Về Pending
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        @if (item.Status != "Rejected")
+                                        {
+                                            <li>
+                                                <form asp-action="UpdateStatus" method="post">
+                                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                                    <input type="hidden" name="status" value="Rejected" />
+                                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                    <button type="submit" class="dropdown-item py-2" style="color:#dc2626;font-size:.875rem;">
+                                                        <i class="bi bi-x-circle me-2"></i>Từ chối
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        @if (item.Status != "Hidden")
+                                        {
+                                            <li>
+                                                <form asp-action="UpdateStatus" method="post">
+                                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                                    <input type="hidden" name="status" value="Hidden" />
+                                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                                    <button type="submit" class="dropdown-item py-2" style="color:#6b7280;font-size:.875rem;">
+                                                        <i class="bi bi-eye-slash me-2"></i>Ẩn (Hide)
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

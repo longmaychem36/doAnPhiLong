@@ -88,6 +88,8 @@ namespace MakerSpot.Controllers
             {
                 // Remove upvote
                 _context.ProductUpvotes.Remove(upvote);
+                await _context.Products.Where(p => p.ProductId == productId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.UpvoteCount, p => p.UpvoteCount - 1));
             }
             else
             {
@@ -97,9 +99,11 @@ namespace MakerSpot.Controllers
                     ProductId = productId,
                     UserId = userId
                 });
+                await _context.Products.Where(p => p.ProductId == productId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.UpvoteCount, p => p.UpvoteCount + 1));
             }
 
-            // Trigger will handle UpvoteCount update! So just save.
+            // Save the upvote changes
             await _context.SaveChangesAsync();
 
             // Create notification for product owner (only on new upvote, i.e. upvote was null before adding)
@@ -153,14 +157,17 @@ namespace MakerSpot.Controllers
 
             _context.Comments.Add(comment);
             
-            // Trigger handles CommentCount update.
+            // Generate notification, handle comment increment safely
+            await _context.Products.Where(p => p.ProductId == productId)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.CommentCount, p => p.CommentCount + 1));
+
             await _context.SaveChangesAsync();
 
             // Create notification for product owner
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == productId);
             if (product != null && product.UserId != userId)
             {
-                var currentUser = await _context.Users.FindAsync(userId);
+                var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
                 _context.Notifications.Add(new Notification
                 {
                     UserId = product.UserId,
@@ -196,7 +203,7 @@ namespace MakerSpot.Controllers
             }
 
             // Check if slug is unique
-            if (await _context.Products.AnyAsync(p => p.Slug == model.Slug))
+            if (await _context.Products.AsNoTracking().AnyAsync(p => p.Slug == model.Slug))
             {
                 ModelState.AddModelError("Slug", "Slug này đã được sử dụng. Vui lòng chọn Slug khác.");
                 await PopulateTopicsAsync(model);

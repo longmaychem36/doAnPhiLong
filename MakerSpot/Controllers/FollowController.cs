@@ -46,7 +46,7 @@ namespace MakerSpot.Controllers
                 });
 
                 // Create notification for the followed user
-                var currentUser = await _context.Users.FindAsync(userId);
+                var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
                 _context.Notifications.Add(new Notification
                 {
                     UserId = followingId,

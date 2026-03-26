@@ -1,56 +1,64 @@
 @model MakerSpot.ViewModels.RegisterViewModel
-
 @{
     ViewData["Title"] = "Đăng ký";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0">
+<div class="row justify-content-center" style="margin-top:3rem;margin-bottom:3rem;">
+    <div class="col-md-5 col-lg-4">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mx-auto mb-3"
+                 style="width:48px;height:48px;background:var(--ph-orange);">
+                <span class="text-white fw-bold" style="font-size:1.4rem;">P</span>
+            </div>
+            <h1 class="h3 fw-bold mb-1">Tạo tài khoản</h1>
+            <p class="text-muted" style="font-size:.9rem;">Tham gia cộng đồng MakerSpot hoàn toàn miễn phí</p>
+        </div>
+
+        <div class="card border-0">
             <div class="card-body p-4">
-                <h3 class="card-title text-center mb-4 fw-bold">Đăng ký tài khoản</h3>
                 <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                    
+                    <div asp-validation-summary="ModelOnly" class="alert mb-3 p-3 text-danger"
+                         style="background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;font-size:.875rem;"></div>
+
                     <div class="mb-3">
-                        <label asp-for="FullName" class="form-label fw-semibold"></label>
-                        <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
-                        <span asp-validation-for="FullName" class="text-danger"></span>
+                        <label asp-for="FullName" class="form-label">Họ và tên</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Username" class="form-label fw-semibold"></label>
-                        <input asp-for="Username" class="form-control" placeholder="Tên đăng nhập" />
-                        <span asp-validation-for="Username" class="text-danger"></span>
+                        <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+                        <input asp-for="Username" class="form-control" placeholder="nguyenvana" />
+                        <span asp-validation-for="Username" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label fw-semibold"></label>
-                        <input asp-for="Email" class="form-control" placeholder="Nhập email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Password" class="form-label fw-semibold"></label>
-                        <input asp-for="Password" class="form-control" placeholder="Mật khẩu" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <label asp-for="Password" class="form-label">Mật khẩu</label>
+                        <input asp-for="Password" class="form-control" placeholder="Ít nhất 6 ký tự" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        <label asp-for="ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary fw-bold py-2">Đăng ký</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Tạo tài khoản</button>
                 </form>
-                <div class="text-center mt-3">
-                    <p class="mb-0">Đã có tài khoản? <a asp-action="Login" class="text-decoration-none fw-bold">Đăng nhập</a></p>
-                </div>
             </div>
         </div>
+
+        <p class="text-center mt-3 text-muted" style="font-size:.875rem;">
+            Đã có tài khoản?
+            <a asp-action="Login" class="fw-semibold text-decoration-none" style="color:var(--ph-orange);">Đăng nhập</a>
+        </p>
     </div>
 </div>
 

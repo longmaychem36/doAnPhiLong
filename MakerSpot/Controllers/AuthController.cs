@@ -3,6 +3,7 @@ using MakerSpot.Models;
 using MakerSpot.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,16 +33,33 @@ namespace MakerSpot.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            // In real app, hash password and compare. Here for simplicity, exact match or simple hash
             var user = await _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Username == model.Username && u.PasswordHash == model.Password);
+                .FirstOrDefaultAsync(u => u.Username == model.Username);
 
             if (user == null)
             {
                 ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
                 return View(model);
+            }
+
+            var hasher = new PasswordHasher<User>();
+            var passwordVerify = hasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+
+            // Fallback to plain text for old demo accounts
+            if (passwordVerify == PasswordVerificationResult.Failed && user.PasswordHash != model.Password)
+            {
+                ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                return View(model);
+            }
+            
+            // Auto upgrade hash if needed
+            if (passwordVerify == PasswordVerificationResult.SuccessRehashNeeded || 
+                user.PasswordHash == model.Password) // Plain text migration
+            {
+                user.PasswordHash = hasher.HashPassword(user, model.Password);
+                await _context.SaveChangesAsync();
             }
 
             if (!user.IsActive)
@@ -85,13 +103,13 @@ namespace MakerSpot.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            if (await _context.Users.AnyAsync(u => u.Username == model.Username))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Username == model.Username))
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại.");
                 return View(model);
             }
 
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == model.Email))
             {
                 ModelState.AddModelError("Email", "Email đã được sử dụng.");
                 return View(model);
@@ -110,10 +128,12 @@ namespace MakerSpot.Controllers
                 Username = model.Username,
                 Email = model.Email,
                 FullName = model.FullName,
-                PasswordHash = model.Password, // Simple plain mapping for Phase 1 demo, per requirements
                 IsActive = true,
                 IsVerified = false
             };
+            
+            var hasher = new PasswordHasher<User>();
+            newUser.PasswordHash = hasher.HashPassword(newUser, model.Password);
 
             newUser.UserRoles.Add(new UserRole { Role = memberRole });
 

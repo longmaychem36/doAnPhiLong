@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MakerSpot")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0c3002eac131fddaac4aca5bc24366545c53efc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61286f791bcefb3b87d9ef4b6eb44fd130fde0ed")]
 [assembly: System.Reflection.AssemblyProductAttribute("MakerSpot")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MakerSpot")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,114 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MakerSpot Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
+        body { background: #f3f4f6; }
         .admin-sidebar {
-            min-height: calc(100vh - 56px);
-            background-color: #343a40;
+            width: 230px;
+            min-height: 100vh;
+            background: #1f2937;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
         }
-        .admin-sidebar .nav-link {
-            color: #c2c7d0;
-            padding: 0.8rem 1rem;
+        .admin-sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active {
-            color: #fff;
-            background-color: rgba(255,255,255,0.1);
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1.25rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: .875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 2px 8px;
+            transition: all .2s;
+        }
+        .admin-nav-link:hover { color: #f9fafb; background: rgba(255,255,255,.07); }
+        .admin-nav-link.active { color: #fff; background: rgba(255,97,84,.25); }
+        .admin-nav-link.active i { color: var(--ph-orange); }
+        .admin-main {
+            margin-left: 230px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-topbar {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: .8rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-content { padding: 1.75rem 2rem; flex: 1; }
+        @@media (max-width: 768px) {
+            .admin-sidebar { position: relative; width: 100%; min-height: auto; }
+            .admin-main { margin-left: 0; }
         }
     </style>
 </head>
-<body class="bg-light">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                <i class="bi bi-rocket-takeoff-fill me-2 fs-5"></i> 
-                <span>MakerSpot <span class="badge @(User.IsInRole("Admin") ? "bg-danger" : "bg-warning text-dark") ms-1" style="font-size: 0.6rem;">@(User.IsInRole("Admin") ? "ADMIN" : "MODERATOR")</span></span>
+<body>
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+        <div class="admin-sidebar-brand">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="text-decoration-none d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center justify-content-center rounded-2 text-white fw-bold" style="width:28px;height:28px;background:var(--ph-orange);font-size:.9rem;">P</div>
+                <span class="text-white fw-bold" style="font-size:1rem;">MakerSpot</span>
+                <span class="badge ms-1 @(User.IsInRole("Admin") ? "" : "")"
+                      style="background:@(User.IsInRole("Admin") ? "#dc2626" : "#d97706");font-size:.65rem;">
+                    @(User.IsInRole("Admin") ? "ADMIN" : "MOD")
+                </span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNavbar">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" target="_blank">
-                            <i class="bi bi-box-arrow-up-right me-1"></i> Xem trang Client
-                        </a>
-                    </li>
-                    @if (User.Identity!.IsAuthenticated)
-                    {
-                        <li class="nav-item d-flex align-items-center me-3">
-                            <span class="nav-link text-light fw-bold">
-                                <i class="bi bi-person-circle me-1"></i>@User.Identity.Name
-                            </span>
-                        </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <a class="btn btn-outline-light btn-sm fw-bold" asp-area="" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
-                        </li>
-                    }
-                </ul>
+        </div>
+
+        <nav class="mt-2 flex-grow-1">
+            <div class="px-2 py-2">
+                <p class="text-uppercase px-3 mb-1" style="font-size:.65rem;letter-spacing:.8px;color:#4b5563;font-weight:600;">Menu</p>
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
+                   class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a asp-area="Admin" asp-controller="Products" asp-action="Pending"
+                   class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Pending" ? "active" : "")">
+                    <i class="bi bi-hourglass-split"></i> Chờ duyệt
+                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-area="Admin" asp-controller="Products" asp-action="Index"
+                       class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                        <i class="bi bi-box-seam"></i> Tất cả sản phẩm
+                    </a>
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                       class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                        <i class="bi bi-people"></i> Quản lý Users
+                    </a>
+                }
+            </div>
+        </nav>
+
+        <div class="px-3 py-4 border-top" style="border-color:rgba(255,255,255,.08)!important;">
+            <a asp-area="" asp-controller="Home" asp-action="Index" target="_blank"
+               class="text-muted text-decoration-none d-flex align-items-center gap-2 mb-3" style="font-size:.8rem;color:#9ca3af!important;">
+                <i class="bi bi-box-arrow-up-right"></i> Xem trang chủ
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar" style="width:30px;height:30px;font-size:.8rem;background:#4b5563;">
+                    @User.Identity!.Name!.Substring(0,1).ToUpper()
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="text-white fw-semibold" style="font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@User.Identity.Name</div>
+                </div>
+                <a asp-area="" asp-controller="Auth" asp-action="Logout" class="text-muted" title="Đăng xuất">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block admin-sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column gap-1">
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Pending" ? "active" : "")" asp-area="Admin" asp-controller="Products" asp-action="Pending">
-                                <i class="bi bi-clock-history me-2"></i> Sản phẩm chờ duyệt
-                            </a>
-                        </li>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Products" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-area="Admin" asp-controller="Products" asp-action="Index">
-                                    <i class="bi bi-box-seam me-2"></i> Tất cả sản phẩm
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">
-                                    <i class="bi bi-people me-2"></i> Quản lý Users
-                                </a>
-                            </li>
-                        }
-                    </ul>
+    <!-- MAIN -->
+    <div class="admin-main">
+        <!-- Top bar -->
+        <div class="admin-topbar d-flex align-items-center justify-content-between">
+            <h2 class="h5 fw-bold mb-0">@ViewData["Title"]</h2>
+            <small class="text-muted">@DateTime.Now.ToString("dddd, dd/MM/yyyy")</small>
+        </div>
+
+        <!-- Flash messages -->
+        <div class="px-4 pt-3">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert d-flex align-items-center gap-2 alert-dismissible fade show toast-alert mb-0"
+                     style="background:#f0fdf4;border-left:4px solid #16a34a;color:#15803d;border-radius:10px;" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <div>@TempData["SuccessMessage"]</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
                 </div>
-            </nav>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert d-flex align-items-center gap-2 alert-dismissible fade show toast-alert mb-0"
+                     style="background:#fef2f2;border-left:4px solid #dc2626;color:#dc2626;border-radius:10px;" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <div>@TempData["ErrorMessage"]</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                </div>
+            }
+        </div>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm border-0" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i><strong>Thành công!</strong> @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                }
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm border-0" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Lỗi!</strong> @TempData["ErrorMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                }
-
-                @RenderBody()
-            </main>
+        <!-- Content -->
+        <div class="admin-content">
+            @RenderBody()
         </div>
     </div>
 
