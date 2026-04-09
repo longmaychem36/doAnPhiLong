@@ -30,27 +30,41 @@
                     <p class="text-muted mb-3" style="font-size:.875rem;line-height:1.5;">@Model.User.Bio</p>
                 }
 
-                <!-- Follow button -->
-                @if (!isOwn && User.Identity.IsAuthenticated)
+                <!-- Actions -->
+                @if (isOwn)
                 {
-                    <form asp-controller="Follow" asp-action="Toggle" method="post" class="mb-3">
-                        <input type="hidden" name="followingId" value="@Model.User.UserId" />
-                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                        <button type="submit" class="btn @(Model.IsFollowing ? "border fw-semibold" : "btn-primary fw-semibold") w-100"
-                                style="@(Model.IsFollowing ? "background:#fff;" : "")">
-                            @if (Model.IsFollowing)
-                            {
-                                <i class="bi bi-person-check me-1"></i><text>Đang theo dõi</text>
-                            }
-                            else
-                            {
-                                <i class="bi bi-person-plus me-1"></i><text>Theo dõi</text>
-                            }
-                        </button>
-                    </form>
+                    <a asp-controller="User" asp-action="EditProfile" class="btn btn-outline-dark fw-semibold w-100 mb-3" style="border-radius:10px;">
+                        <i class="bi bi-pencil-square me-1"></i>Chỉnh sửa hồ sơ
+                    </a>
+                }
+                else if (User.Identity.IsAuthenticated)
+                {
+                    <div class="d-flex gap-2 mb-3">
+                        <form asp-controller="Follow" asp-action="Toggle" method="post" class="flex-grow-1">
+                            <input type="hidden" name="followingId" value="@Model.User.UserId" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <button type="submit" class="btn @(Model.IsFollowing ? "border fw-semibold" : "btn-primary fw-semibold") w-100"
+                                    style="@(Model.IsFollowing ? "background:#fff;" : "")">
+                                @if (Model.IsFollowing)
+                                {
+                                    <i class="bi bi-person-check me-1"></i><text>Đang theo dõi</text>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-plus me-1"></i><text>Theo dõi</text>
+                                }
+                            </button>
+                        </form>
+                        
+                        <form asp-controller="Chat" asp-action="Start" method="post">
+                            <input type="hidden" name="username" value="@Model.User.Username" />
+                            <button type="submit" class="btn btn-light border fw-semibold fw-bold h-100" style="background:#fff; px-3" title="Nhắn tin">
+                                <i class="bi bi-chat-text text-dark"></i>
+                            </button>
+                        </form>
+                    </div>
                 }
 
-                <!-- Stats -->
                 <div class="d-flex justify-content-around pt-3 border-top">
                     <div>
                         <div class="fw-bold">@Model.SubmittedProducts.Count(p => p.Status == "Approved")</div>
@@ -65,6 +79,54 @@
                         <div class="text-muted" style="font-size:.78rem;">Following</div>
                     </div>
                 </div>
+
+                <!-- Maker Stats Dashboard (Phase 8) -->
+                @if (Model.SubmittedProducts.Any(p => p.Status == "Approved"))
+                {
+                    <div class="mt-4 pt-3 border-top text-start">
+                        <h6 class="fw-bold text-dark mb-3" style="font-size:.85rem;text-transform:uppercase;letter-spacing:0.5px;">
+                            <i class="bi bi-bar-chart-fill text-primary ms-1 me-2"></i>Thống kê Maker
+                        </h6>
+                        <div class="d-flex align-items-center gap-3 mb-2" title="Tổng lượt Upvote nhận được">
+                            <div class="rounded d-flex justify-content-center align-items-center" style="width:32px;height:32px;background:#fef2f2;color:#dc2626;">
+                                <i class="bi bi-caret-up-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bolder fs-5 lh-1 text-dark">@Model.TotalUpvotesReceived</div>
+                                <div class="text-muted" style="font-size:.75rem;">Upvotes thu về</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mb-3" title="Tổng bình luận nhận được">
+                            <div class="rounded d-flex justify-content-center align-items-center" style="width:32px;height:32px;background:#eff6ff;color:#2563eb;">
+                                <i class="bi bi-chat-dots fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bolder fs-5 lh-1 text-dark">@Model.TotalCommentsReceived</div>
+                                <div class="text-muted" style="font-size:.75rem;">Bình luận thu về</div>
+                            </div>
+                        </div>
+                        
+                        @if (Model.TopProduct != null)
+                        {
+                            <div class="card bg-light border-0" style="border-radius:10px;">
+                                <div class="card-body p-3">
+                                    <div class="text-muted mb-2 fw-semibold" style="font-size:.75rem;"><i class="bi bi-trophy text-warning me-1"></i>Sản phẩm xịn nhất</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="@(string.IsNullOrEmpty(Model.TopProduct.LogoUrl) ? "/images/default-logo.png" : Model.TopProduct.LogoUrl)" 
+                                             class="rounded" style="width:32px;height:32px;object-fit:cover;"
+                                             onerror="this.src='https://placehold.co/32';">
+                                        <div class="min-w-0 flex-grow-1">
+                                            <a href="/Product/Detail/@Model.TopProduct.ProductId" class="fw-bold text-dark text-decoration-none d-block text-truncate" style="font-size:.85rem;">@Model.TopProduct.ProductName</a>
+                                            <span class="badge" style="background:var(--ph-orange-light);color:var(--ph-orange);font-size:.7rem;">
+                                                <i class="bi bi-caret-up-fill"></i> @Model.TopProduct.UpvoteCount
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
 
                 <!-- Social links -->
                 @if (!string.IsNullOrEmpty(Model.User.WebsiteUrl) || !string.IsNullOrEmpty(Model.User.TwitterUrl) || !string.IsNullOrEmpty(Model.User.LinkedinUrl))

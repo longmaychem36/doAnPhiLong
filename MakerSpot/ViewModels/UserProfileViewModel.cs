@@ -13,5 +13,10 @@ namespace MakerSpot.ViewModels
         public int FollowingCount { get; set; }
         public bool IsFollowing { get; set; }
         public List<Collection> Collections { get; set; } = new List<Collection>();
+        
+        // Phase 8: Maker Stats
+        public int TotalUpvotesReceived { get; set; }
+        public int TotalCommentsReceived { get; set; }
+        public Product? TopProduct { get; set; }
     }
 }

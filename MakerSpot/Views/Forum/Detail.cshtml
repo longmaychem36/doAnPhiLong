@@ -1,0 +1,223 @@
+@model MakerSpot.Models.ForumPost
+@{
+    ViewData["Title"] = Model.Title;
+    var currentUserIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(currentUserIdStr, out var currentUserId);
+    bool isOwner = currentUserId == Model.UserId;
+    bool isAdminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb" style="font-size:.82rem;">
+                <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Diễn đàn</a></li>
+                @if (!string.IsNullOrEmpty(Model.Tag))
+                {
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-route-tag="@Model.Tag" class="text-decoration-none">@Model.Tag</a></li>
+                }
+                <li class="breadcrumb-item active text-truncate" style="max-width:300px;">@Model.Title</li>
+            </ol>
+        </nav>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Main Post Card -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:14px;">
+            <div class="card-body p-4">
+                <!-- Author & Meta -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    @if (!string.IsNullOrEmpty(Model.User.AvatarUrl))
+                    {
+                        <img src="@Model.User.AvatarUrl" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div class="avatar" style="width:44px;height:44px;">@Model.User.Username.Substring(0,1).ToUpper()</div>
+                    }
+                    <div>
+                        <a asp-controller="User" asp-action="Profile" asp-route-username="@Model.User.Username" class="fw-bold text-dark text-decoration-none" style="font-size:.95rem;">
+                            @Model.User.FullName
+                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted" style="font-size:.78rem;">@@@Model.User.Username</span>
+                            <span class="text-muted" style="font-size:.75rem;">•</span>
+                            <span class="text-muted" style="font-size:.75rem;">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    </div>
+                    <div class="ms-auto d-flex gap-2">
+                        @if (!string.IsNullOrEmpty(Model.Tag))
+                        {
+                            <span class="badge rounded-pill" style="background:#f3f4f6; color:#6b7280; font-size:.75rem;">@Model.Tag</span>
+                        }
+                        @if (Model.IsLocked)
+                        {
+                            <span class="badge bg-warning text-dark rounded-pill" style="font-size:.75rem;"><i class="bi bi-lock-fill me-1"></i>Đã khóa</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <h1 class="h4 fw-bold mb-3">
+                    @if (Model.IsPinned)
+                    {
+                        <i class="bi bi-pin-angle-fill text-danger me-1" style="font-size:.9rem;"></i>
+                    }
+                    @Model.Title
+                </h1>
+
+                <!-- Content -->
+                <div class="mb-3" style="font-size:.92rem; line-height:1.75; color:#374151; white-space:pre-wrap; word-break:break-word;">@Model.Content</div>
+
+                <!-- Stats & Actions -->
+                <div class="d-flex align-items-center justify-content-between border-top pt-3 mt-3">
+                    <div class="d-flex gap-3">
+                        <span class="text-muted d-flex align-items-center gap-1" style="font-size:.8rem;">
+                            <i class="bi bi-eye"></i> @Model.ViewCount lượt xem
+                        </span>
+                        <span class="text-muted d-flex align-items-center gap-1" style="font-size:.8rem;">
+                            <i class="bi bi-chat-left-text"></i> @Model.Replies.Count trả lời
+                        </span>
+                    </div>
+                    @if (isOwner || isAdminOrMod)
+                    {
+                        <form asp-action="Delete" asp-route-id="@Model.ForumPostId" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" style="font-size:.78rem;">
+                                <i class="bi bi-trash3 me-1"></i>Xóa bài viết
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Replies Section -->
+        <div class="mb-4">
+            <h5 class="fw-bold mb-3" style="font-size:1rem;">
+                <i class="bi bi-chat-left-text me-2" style="color:#ff6154;"></i>Trả lời (@Model.Replies.Count)
+            </h5>
+
+            @if (!Model.Replies.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-chat d-block mb-2" style="font-size:2rem; color:#d1d5db;"></i>
+                    <span style="font-size:.85rem;">Chưa có trả lời nào. Hãy là người đầu tiên!</span>
+                </div>
+            }
+
+            @foreach (var reply in Model.Replies)
+            {
+                <div class="card border-0 shadow-sm mb-2" style="border-radius:12px;">
+                    <div class="card-body p-3">
+                        <div class="d-flex gap-3">
+                            @if (!string.IsNullOrEmpty(reply.User.AvatarUrl))
+                            {
+                                <img src="@reply.User.AvatarUrl" class="rounded-circle flex-shrink-0" style="width:34px;height:34px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="avatar flex-shrink-0" style="width:34px;height:34px;font-size:.8rem;">@reply.User.Username.Substring(0,1).ToUpper()</div>
+                            }
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a asp-controller="User" asp-action="Profile" asp-route-username="@reply.User.Username" class="fw-semibold text-dark text-decoration-none" style="font-size:.85rem;">
+                                            @reply.User.FullName
+                                        </a>
+                                        <span class="text-muted" style="font-size:.73rem;">@reply.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                    @if (reply.UserId == currentUserId || isAdminOrMod)
+                                    {
+                                        <form asp-action="DeleteReply" asp-route-id="@reply.ForumReplyId" method="post" onsubmit="return confirm('Xóa trả lời này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm text-muted p-0" title="Xóa">
+                                                <i class="bi bi-trash3" style="font-size:.8rem;"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                                <div class="mt-1" style="font-size:.88rem; line-height:1.6; color:#374151; white-space:pre-wrap; word-break:break-word;">@reply.Content</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Reply Form -->
+        @if (User.Identity!.IsAuthenticated && !Model.IsLocked)
+        {
+            <div class="card border-0 shadow-sm" style="border-radius:14px;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3" style="font-size:.9rem;">Viết trả lời</h6>
+                    <form asp-action="Reply" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="forumPostId" value="@Model.ForumPostId" />
+                        <textarea name="content" class="form-control mb-3" rows="4" placeholder="Chia sẻ suy nghĩ của bạn..." required style="border-radius:10px; border-color:#e5e7eb;"></textarea>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary fw-semibold px-4" style="border-radius:10px;">
+                                <i class="bi bi-reply me-1"></i>Gửi trả lời
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+        else if (Model.IsLocked)
+        {
+            <div class="alert border-0 bg-light text-center py-3">
+                <i class="bi bi-lock-fill text-warning me-2"></i>
+                <span class="text-muted" style="font-size:.85rem;">Bài viết đã bị khóa, không thể trả lời thêm.</span>
+            </div>
+        }
+        else
+        {
+            <div class="card border-0 text-center py-4" style="background:#f9fafb; border-radius:14px;">
+                <p class="text-muted mb-2" style="font-size:.85rem;">Đăng nhập để tham gia thảo luận</p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-primary fw-semibold px-4">Đăng nhập</a>
+                    <a asp-controller="Auth" asp-action="Register" class="btn border fw-semibold px-4">Đăng ký</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm" style="border-radius:12px;">
+            <div class="card-body p-3">
+                <h6 class="fw-bold mb-3" style="font-size:.8rem; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af;">
+                    Về tác giả
+                </h6>
+                <div class="d-flex align-items-center gap-3">
+                    @if (!string.IsNullOrEmpty(Model.User.AvatarUrl))
+                    {
+                        <img src="@Model.User.AvatarUrl" class="rounded-circle" style="width:48px;height:48px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div class="avatar" style="width:48px;height:48px;">@Model.User.Username.Substring(0,1).ToUpper()</div>
+                    }
+                    <div>
+                        <a asp-controller="User" asp-action="Profile" asp-route-username="@Model.User.Username" class="fw-bold text-dark text-decoration-none">
+                            @Model.User.FullName
+                        </a>
+                        <div class="text-muted" style="font-size:.78rem;">@@@Model.User.Username</div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.User.Bio))
+                {
+                    <p class="text-muted mt-2 mb-0" style="font-size:.82rem;">@Model.User.Bio</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

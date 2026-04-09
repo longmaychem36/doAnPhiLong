@@ -34,6 +34,11 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-sort="newest">Mới nhất</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="Index">
+                                <i class="bi bi-chat-square-text me-1"></i>Diễn đàn
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Search -->
@@ -64,6 +69,11 @@
                             <li class="nav-item">
                                 <a class="nav-link position-relative" asp-controller="Notification" asp-action="Index" title="Thông báo">
                                     <i class="bi bi-bell" style="font-size:1.1rem;"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chat" asp-action="Index" title="Tin nhắn">
+                                    <i class="bi bi-chat-dots" style="font-size:1.1rem;"></i>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -101,9 +111,11 @@
                                     </li>
                                     <li><hr class="dropdown-divider my-1"></li>
                                     <li>
-                                        <a class="dropdown-item py-2 text-danger" asp-controller="Auth" asp-action="Logout">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-                                        </a>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0 p-0">
+                                            <button type="submit" class="dropdown-item py-2 text-danger bg-transparent" style="border:none;">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                            </button>
+                                        </form>
                                     </li>
                                 </ul>
                             </li>
@@ -165,6 +177,22 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Prevent double form submission globally
+        $('form').on('submit', function () {
+            if ($(this).data('submitted') === true) {
+                return false;
+            } else {
+                $(this).data('submitted', true);
+                var btn = $(this).find('button[type="submit"]');
+                btn.prop('disabled', true);
+                btn.css('opacity', '0.7');
+                return true;
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
+

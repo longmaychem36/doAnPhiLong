@@ -88,7 +88,7 @@
                 <div class="row mb-3">
                     <div class="col-sm-3 fw-semibold text-muted">Người đăng</div>
                     <div class="col-sm-9">
-                        <a href="/@Model.User.Username" target="_blank" class="text-decoration-none">
+                        <a asp-area="" asp-controller="User" asp-action="Profile" asp-route-username="@Model.User.Username" target="_blank" class="text-decoration-none">
                             <strong>@Model.User.FullName</strong> (@@@Model.User.Username)
                         </a> 
                         <span class="text-muted small">vào lúc @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>

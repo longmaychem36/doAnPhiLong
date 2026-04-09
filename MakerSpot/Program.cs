@@ -6,6 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient(); // Cho Chatbot Gemini API
+builder.Services.AddSignalR(); // Tính năng Chat thời gian thực
+
+// Cloudinary
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<MakerSpot.Services.IPhotoService, MakerSpot.Services.PhotoService>();
 
 builder.Services.AddDbContext<MakerSpotContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -49,5 +55,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<MakerSpot.Hubs.ChatHub>("/chatHub");
 
 app.Run();

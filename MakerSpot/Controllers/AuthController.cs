@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MakerSpot.Controllers
 {
+    /// <summary>
+    /// Xác thực người dùng: Đăng nhập (Cookie Auth), Đăng ký (tự động gán Role Member), Đăng xuất.
+    /// Sử dụng PasswordHasher<User> của ASP.NET Identity để băm mật khẩu an toàn.
+    /// </summary>
     public class AuthController : Controller
     {
         private readonly MakerSpotContext _context;
@@ -18,6 +22,7 @@ namespace MakerSpot.Controllers
             _context = context;
         }
 
+        // GET: /Auth/Login — Nếu đã đăng nhập thì chuyển về Home
         [HttpGet]
         public IActionResult Login()
         {
@@ -25,9 +30,10 @@ namespace MakerSpot.Controllers
             return View();
         }
 
+        // POST: /Auth/Login — Xác thực bằng Cookie Claims (PRG Pattern)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (User.Identity!.IsAuthenticated) return RedirectToAction("Index", "Home");
 
@@ -85,9 +91,15 @@ namespace MakerSpot.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
             return RedirectToAction("Index", "Home");
         }
 
+        // GET: /Auth/Register — Form đăng ký
         [HttpGet]
         public IActionResult Register()
         {
@@ -95,6 +107,7 @@ namespace MakerSpot.Controllers
             return View();
         }
 
+        // POST: /Auth/Register — Tạo User mới với Role Member, tự động đăng nhập sau khi thành công
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -128,6 +141,7 @@ namespace MakerSpot.Controllers
                 Username = model.Username,
                 Email = model.Email,
                 FullName = model.FullName,
+                AvatarUrl = "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(model.FullName) + "&background=6366f1&color=fff&size=200",
                 IsActive = true,
                 IsVerified = false
             };
@@ -157,6 +171,9 @@ namespace MakerSpot.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // POST: /Auth/Logout — Xóa cookie xác thực, chào tạm biệt người dùng
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

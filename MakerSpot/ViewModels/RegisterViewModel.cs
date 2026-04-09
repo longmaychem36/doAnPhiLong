@@ -5,6 +5,7 @@ namespace MakerSpot.ViewModels
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "Vui lòng nhập Username.")]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Tên đăng nhập từ 3 đến 50 ký tự.")]
         [Display(Name = "Tên đăng nhập")]
         public string Username { get; set; } = null!;
@@ -15,6 +16,7 @@ namespace MakerSpot.ViewModels
         public string Email { get; set; } = null!;
         
         [Required(ErrorMessage = "Vui lòng nhập Họ tên.")]
+        [RegularExpression(@"^[\S\s]*\S[\S\s]*$", ErrorMessage = "Họ tên không được chỉ chứa khoảng trắng")]
         [Display(Name = "Họ và tên")]
         public string FullName { get; set; } = null!;
 

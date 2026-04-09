@@ -49,6 +49,12 @@
                     <i class="bi bi-play-circle me-1"></i>Demo
                 </a>
             }
+            @if(User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <button type="button" class="btn border fw-semibold px-4 text-dark" style="background:#fff;" data-bs-toggle="modal" data-bs-target="#shareChatModal" onclick="loadConversations()">
+                    <i class="bi bi-share me-1"></i>Chia sẻ vào Chat
+                </button>
+            }
         </div>
 
         <!-- Media Gallery -->
@@ -145,6 +151,10 @@
             }
 
             <div class="d-flex flex-column gap-4">
+                @{ 
+                    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    bool isAdminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
+                }
                 @foreach (var comment in Model.Product.Comments)
                 {
                     <div class="d-flex gap-3">
@@ -158,16 +168,69 @@
                                     <a asp-controller="User" asp-action="Profile" asp-route-username="@comment.User.Username"
                                        class="fw-bold text-decoration-none" style="color:#1f2937;font-size:.9rem;">@comment.User.FullName</a>
                                     <span class="text-muted" style="font-size:.8rem;">@comment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                    @if (comment.IsEdited)
+                                    {
+                                        <span class="text-muted fst-italic" style="font-size:.75rem;">(đã chỉnh sửa)</span>
+                                    }
                                 </div>
                                 <p class="mb-0" style="font-size:.9rem;line-height:1.6;">@comment.Content</p>
                             </div>
+                            @* Comment action buttons *@
+                            <div class="d-flex align-items-center gap-3" style="font-size:.8rem;">
+                                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                                {
+                                    @* Vote button *@
+                                    <form asp-controller="Product" asp-action="VoteComment" method="post" class="d-inline">
+                                        <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                        <button type="submit" class="btn btn-sm p-0 text-muted fw-semibold" style="border:none;background:none;">
+                                            <i class="bi bi-hand-thumbs-up me-1"></i>@comment.CommentVotes.Count
+                                        </button>
+                                    </form>
+
+                                    @* Reply button *@
+                                    <button class="btn btn-sm fw-semibold p-0 text-muted text-decoration-none"
+                                            onclick="document.getElementById('reply-@comment.CommentId').classList.toggle('d-none')"
+                                            style="background:none;border:none;">
+                                        <i class="bi bi-reply me-1"></i>Trả lời
+                                    </button>
+                                    
+                                    @* Edit/Delete (chỉ chủ comment hoặc Admin/Mod) *@
+                                    @if (currentUserId == comment.UserId.ToString() || isAdminOrMod)
+                                    {
+                                        <button class="btn btn-sm fw-semibold p-0 text-muted"
+                                                onclick="document.getElementById('edit-@comment.CommentId').classList.toggle('d-none')"
+                                                style="background:none;border:none;">
+                                            <i class="bi bi-pencil me-1"></i>Sửa
+                                        </button>
+                                        <form asp-controller="Product" asp-action="DeleteComment" method="post" class="d-inline"
+                                              onsubmit="return confirm('Bạn chắc chắn muốn xóa bình luận này?');">
+                                            <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                            <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                            <button type="submit" class="btn btn-sm fw-semibold p-0 text-danger" style="background:none;border:none;">
+                                                <i class="bi bi-trash me-1"></i>Xóa
+                                            </button>
+                                        </form>
+                                    }
+                                }
+                            </div>
+
+                            @* Edit form (ẩn mặc định) *@
+                            @if (User.Identity != null && User.Identity.IsAuthenticated && (currentUserId == comment.UserId.ToString() || isAdminOrMod))
+                            {
+                                <div id="edit-@comment.CommentId" class="d-none mt-2">
+                                    <form asp-controller="Product" asp-action="EditComment" method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                        <textarea name="content" class="form-control form-control-sm flex-grow-1" rows="2">@comment.Content</textarea>
+                                        <button type="submit" class="btn btn-primary btn-sm fw-semibold">Lưu</button>
+                                    </form>
+                                </div>
+                            }
+
+                            @* Reply form *@
                             @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
-                                <button class="btn btn-sm fw-semibold p-0 text-muted text-decoration-none"
-                                        onclick="document.getElementById('reply-@comment.CommentId').classList.toggle('d-none')"
-                                        style="font-size:.8rem;background:none;border:none;">
-                                    <i class="bi bi-reply me-1"></i>Trả lời
-                                </button>
                                 <div id="reply-@comment.CommentId" class="d-none mt-2">
                                     <form asp-controller="Product" asp-action="PostComment" method="post" class="d-flex gap-2">
                                         <input type="hidden" name="productId" value="@Model.Product.ProductId" />
@@ -178,6 +241,7 @@
                                     </form>
                                 </div>
                             }
+
                             <!-- Replies -->
                             @if (comment.Replies.Any())
                             {
@@ -190,6 +254,7 @@
                                                 <div class="comment-bubble" style="border-radius:0 8px 8px 8px;padding:.6rem .9rem;">
                                                     <span class="fw-bold me-2" style="font-size:.85rem;color:#1f2937;">@reply.User.FullName</span>
                                                     <span class="text-muted" style="font-size:.78rem;">@reply.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                                    @if (reply.IsEdited) { <span class="text-muted fst-italic" style="font-size:.72rem;">(đã chỉnh sửa)</span> }
                                                     <p class="mb-0 mt-1" style="font-size:.88rem;">@reply.Content</p>
                                                 </div>
                                             </div>
@@ -286,6 +351,123 @@
                     </div>
                 </div>
             }
+
+            @* Report sản phẩm *@
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <div class="card border-0">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3" style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ph-muted);">Báo cáo vi phạm</h6>
+                        <form asp-controller="Report" asp-action="Submit" method="post">
+                            <input type="hidden" name="targetType" value="Product" />
+                            <input type="hidden" name="targetId" value="@Model.Product.ProductId" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <select name="reason" class="form-select form-select-sm mb-2" required>
+                                <option value="">Chọn lý do...</option>
+                                <option value="Spam">Spam / Quảng cáo</option>
+                                <option value="Nội dung không phù hợp">Nội dung không phù hợp</option>
+                                <option value="Vi phạm bản quyền">Vi phạm bản quyền</option>
+                                <option value="Thông tin sai lệch">Thông tin sai lệch</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <textarea name="description" class="form-control form-control-sm mb-2" rows="2"
+                                      placeholder="Mô tả thêm (tùy chọn)..."></textarea>
+                            <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold w-100">
+                                <i class="bi bi-flag me-1"></i>Gửi báo cáo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+<!-- Modal Chia Sẻ Chat -->
+<div class="modal fade" id="shareChatModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Chia sẻ sản phẩm này</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Lời nhắn (tuỳ chọn)</label>
+                    <textarea id="shareMessageContent" class="form-control" rows="2" placeholder="Gửi cho bạn bè xem thử nha..."></textarea>
+                </div>
+                <label class="form-label text-muted small fw-bold mb-2">Chọn cuộc trò chuyện</label>
+                <div id="conversationsList" class="list-group list-group-flush border rounded-3 overflow-auto" style="max-height: 250px;">
+                    <div class="text-center p-3 text-muted" id="convLoading"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadConversations() {
+            const list = document.getElementById('conversationsList');
+            list.innerHTML = '<div class="text-center p-3 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</div>';
+            
+            fetch('/Chat/GetMyConversations')
+                .then(r => r.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        list.innerHTML = '<div class="p-3 text-center text-muted small">Không tìm thấy cuộc trò chuyện nào để chia sẻ. Hãy nhắn tin trước nhé!</div>';
+                        return;
+                    }
+                    data.forEach(c => {
+                        const btn = document.createElement('button');
+                        btn.className = "list-group-item list-group-item-action d-flex align-items-center gap-2 py-2";
+                        const avatar = c.avatarUrl || '/images/default-avatar.png';
+                        btn.innerHTML = `
+                            <img src="${avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                            <span class="fw-semibold flex-grow-1 text-start">${c.otherUser}</span>
+                            <span class="btn btn-sm btn-primary rounded-pill px-3" style="font-size:0.75rem;">Gửi</span>
+                        `;
+                        btn.onclick = () => sendShare(c.conversationId, btn);
+                        list.appendChild(btn);
+                    });
+                });
+        }
+
+        function sendShare(convId, btnEl) {
+            const msg = document.getElementById('shareMessageContent').value;
+            const productId = @Model.Product.ProductId;
+            
+            const btnSend = btnEl.querySelector('.btn-primary');
+            btnSend.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            btnSend.disabled = true;
+
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('conversationId', convId);
+            formData.append('messageContent', msg);
+
+            fetch('/Chat/ShareProduct', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => {
+                if(r.ok) {
+                    btnSend.innerHTML = '<i class="bi bi-check2"></i> Đã gửi';
+                    btnSend.classList.replace('btn-primary', 'btn-success');
+                    setTimeout(() => {
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('shareChatModal'));
+                        modal.hide();
+                    }, 1000);
+                } else {
+                    btnSend.innerHTML = 'Lỗi';
+                    btnSend.disabled = false;
+                }
+            })
+            .catch(err => {
+                btnSend.innerHTML = 'Lỗi';
+                btnSend.disabled = false;
+            });
+        }
+    </script>
+}

@@ -1,0 +1,64 @@
+@model MakerSpot.ViewModels.EditProfileViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h4 class="fw-bold mb-1">Chỉnh sửa hồ sơ</h4>
+                <p class="text-muted mb-4" style="font-size:.9rem;">Cập nhật thông tin cá nhân của bạn</p>
+
+                <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Bio" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Bio" class="form-control" rows="3" placeholder="Giới thiệu ngắn gọn về bạn..."></textarea>
+                        <span asp-validation-for="Bio" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AvatarFile" class="form-label fw-semibold"></label>
+                        <input asp-for="AvatarFile" type="file" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp" />
+                        <span asp-validation-for="AvatarFile" class="text-danger small"></span>
+                        <div class="form-text"><i class="bi bi-info-circle me-1"></i>Hỗ trợ JPG, PNG, WEBP. Dung lượng nhỏ hơn 2MB.</div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-muted mb-3" style="font-size:.85rem;">LIÊN KẾT XÃ HỘI</h6>
+
+                    <div class="mb-3">
+                        <label asp-for="WebsiteUrl" class="form-label fw-semibold"><i class="bi bi-globe2 me-1"></i>Website</label>
+                        <input asp-for="WebsiteUrl" class="form-control" placeholder="https://yoursite.com" />
+                        <span asp-validation-for="WebsiteUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TwitterUrl" class="form-label fw-semibold"><i class="bi bi-twitter-x me-1"></i>Twitter / X</label>
+                        <input asp-for="TwitterUrl" class="form-control" placeholder="https://twitter.com/username" />
+                        <span asp-validation-for="TwitterUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LinkedinUrl" class="form-label fw-semibold"><i class="bi bi-linkedin me-1"></i>LinkedIn</label>
+                        <input asp-for="LinkedinUrl" class="form-control" placeholder="https://linkedin.com/in/username" />
+                        <span asp-validation-for="LinkedinUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-semibold px-4">
+                            <i class="bi bi-check-lg me-1"></i>Lưu thay đổi
+                        </button>
+                        <a asp-action="Profile" asp-route-username="@User.Identity!.Name" class="btn btn-light border fw-semibold px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

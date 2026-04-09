@@ -49,6 +49,37 @@
             </div>
         </div>
 
+        @* Featured Products Section *@
+        @if (Model.FeaturedProducts.Any() && string.IsNullOrEmpty(Model.SearchQuery) && string.IsNullOrEmpty(Model.SelectedTopicSlug))
+        {
+            <div class="mb-4">
+                <h6 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-1"></i>Sản phẩm nổi bật</h6>
+                <div class="row g-3 mb-4">
+                    @foreach (var fp in Model.FeaturedProducts)
+                    {
+                        <div class="col-12">
+                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@fp.ProductId"
+                               class="card border-0 text-decoration-none product-card fade-in d-flex flex-row align-items-center p-3" style="border-left:3px solid var(--ph-orange)!important;">
+                                <img src="@(string.IsNullOrEmpty(fp.LogoUrl) ? "/images/default-logo.png" : fp.LogoUrl)"
+                                     alt="@fp.ProductName" class="product-logo flex-shrink-0" style="width:48px;height:48px;"
+                                     onerror="this.src='https://placehold.co/48x48/f3f4f6/9ca3af?text=🚀';" />
+                                <div class="ms-3 flex-grow-1 min-w-0">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-bold" style="color:#1f2937;">@fp.ProductName</span>
+                                        <span class="badge text-warning bg-warning bg-opacity-10" style="font-size:.65rem;">⭐ Nổi bật</span>
+                                    </div>
+                                    <div class="text-muted text-truncate" style="font-size:.85rem;">@fp.Tagline</div>
+                                </div>
+                                <div class="flex-shrink-0 text-center ms-3">
+                                    <div class="fw-bold" style="font-size:1rem;color:var(--ph-orange);">▲ @fp.UpvoteCount</div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
         <!-- Product list -->
         @if (!Model.Products.Any())
         {
@@ -122,6 +153,43 @@
                     </div>
                 }
             </div>
+
+            @* Phân trang *@
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-4 d-flex justify-content-center">
+                    <ul class="pagination pagination-sm gap-1">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index"
+                                   asp-route-sort="@Model.SortBy" asp-route-search="@Model.SearchQuery"
+                                   asp-route-topic="@Model.SelectedTopicSlug" asp-route-page="@(Model.CurrentPage - 1)">
+                                    <i class="bi bi-chevron-left me-1"></i>Trước
+                                </a>
+                            </li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index"
+                                   asp-route-sort="@Model.SortBy" asp-route-search="@Model.SearchQuery"
+                                   asp-route-topic="@Model.SelectedTopicSlug" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index"
+                                   asp-route-sort="@Model.SortBy" asp-route-search="@Model.SearchQuery"
+                                   asp-route-topic="@Model.SelectedTopicSlug" asp-route-page="@(Model.CurrentPage + 1)">
+                                    Sau<i class="bi bi-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
         }
     </div>
 

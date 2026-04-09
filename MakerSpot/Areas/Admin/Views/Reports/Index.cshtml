@@ -1,0 +1,116 @@
+@model IEnumerable<MakerSpot.Models.Report>
+@{
+    ViewData["Title"] = "Báo cáo vi phạm";
+    string currentStatus = ViewData["CurrentStatus"]?.ToString() ?? "Pending";
+    int pendingCount = ViewData["PendingCount"] != null ? (int)ViewData["PendingCount"] : 0;
+}
+
+<!-- Filter Tabs -->
+<div class="d-flex gap-2 mb-4">
+    <a asp-action="Index" asp-route-status="Pending" class="btn btn-sm rounded-pill px-3 fw-semibold @(currentStatus == "Pending" ? "btn-warning" : "btn-outline-secondary")">
+        ⏳ Pending @if(pendingCount > 0){<span class="badge bg-danger ms-1">@pendingCount</span>}
+    </a>
+    <a asp-action="Index" asp-route-status="Reviewed" class="btn btn-sm rounded-pill px-3 fw-semibold @(currentStatus == "Reviewed" ? "btn-success" : "btn-outline-secondary")">
+        ✓ Reviewed
+    </a>
+    <a asp-action="Index" asp-route-status="Rejected" class="btn btn-sm rounded-pill px-3 fw-semibold @(currentStatus == "Rejected" ? "btn-secondary" : "btn-outline-secondary")">
+        ✗ Rejected
+    </a>
+    <a asp-action="Index" asp-route-status="All" class="btn btn-sm rounded-pill px-3 fw-semibold @(currentStatus == "All" ? "btn-primary" : "btn-outline-secondary")">
+        Tất cả
+    </a>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Người báo cáo</th>
+                        <th>Loại</th>
+                        <th>Lý do</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-shield-check d-block mb-2" style="font-size:2.5rem;color:#d1d5db;"></i>
+                                <span class="text-muted">Không có báo cáo nào.</span>
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var report in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-semibold">#@report.ReportId</td>
+                            <td>
+                                <span style="font-size:.875rem;">@report.ReporterUser.FullName</span>
+                                <div class="text-muted small">@@@report.ReporterUser.Username</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@report.TargetType #@report.TargetId</span>
+                            </td>
+                            <td>
+                                <div style="font-size:.875rem;max-width:200px;" class="text-truncate">@report.Reason</div>
+                                @if (!string.IsNullOrEmpty(report.Description))
+                                {
+                                    <div class="text-muted small text-truncate" style="max-width:200px;">@report.Description</div>
+                                }
+                            </td>
+                            <td style="font-size:.875rem;">@report.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @switch (report.Status)
+                                {
+                                    case "Pending":
+                                        <span class="status-badge status-pending">⏳ Pending</span>
+                                        break;
+                                    case "Reviewed":
+                                        <span class="status-badge status-approved">✓ Reviewed</span>
+                                        break;
+                                    case "Rejected":
+                                        <span class="status-badge status-rejected">✗ Rejected</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                @if (report.Status == "Pending")
+                                {
+                                    <div class="btn-group">
+                                        <form asp-action="Review" method="post" class="d-inline">
+                                            <input type="hidden" name="reportId" value="@report.ReportId" />
+                                            <input type="hidden" name="status" value="Reviewed" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success fw-semibold" style="font-size:.8rem;">
+                                                ✓ Xác nhận
+                                            </button>
+                                        </form>
+                                        <form asp-action="Review" method="post" class="d-inline ms-1">
+                                            <input type="hidden" name="reportId" value="@report.ReportId" />
+                                            <input type="hidden" name="status" value="Rejected" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold" style="font-size:.8rem;">
+                                                ✗ Bỏ qua
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">
+                                        @report.Reviewer?.FullName  
+                                        <br/>@report.ReviewedAt?.ToString("dd/MM HH:mm")
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

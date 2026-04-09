@@ -135,3 +135,5 @@ E:\doAnPhiLong\MakerSpot\obj\Debug\net8.0\MakerSpot.pdb
 E:\doAnPhiLong\MakerSpot\obj\Debug\net8.0\MakerSpot.genruntimeconfig.cache
 E:\doAnPhiLong\MakerSpot\obj\Debug\net8.0\ref\MakerSpot.dll
 E:\doAnPhiLong\MakerSpot\obj\Debug\net8.0\MakerSpot.sourcelink.json
+E:\doAnPhiLong\MakerSpot\bin\Debug\net8.0\CloudinaryDotNet.dll
+E:\doAnPhiLong\MakerSpot\bin\Debug\net8.0\Newtonsoft.Json.dll

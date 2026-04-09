@@ -1,0 +1,81 @@
+@model IEnumerable<MakerSpot.Models.AuditLog>
+@{
+    ViewData["Title"] = "Nhật ký hệ thống";
+    int currentPage = ViewData["CurrentPage"] != null ? (int)ViewData["CurrentPage"] : 1;
+    int totalPages = ViewData["TotalPages"] != null ? (int)ViewData["TotalPages"] : 1;
+}
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size:.875rem;">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Người thực hiện</th>
+                        <th>Hành động</th>
+                        <th>Bảng</th>
+                        <th>Record ID</th>
+                        <th>Chi tiết</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-journal-text d-block mb-2" style="font-size:2.5rem;color:#d1d5db;"></i>
+                                <span class="text-muted">Chưa có nhật ký nào.</span>
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-muted">@log.LogId</td>
+                            <td class="fw-semibold">@(log.User?.FullName ?? "System")</td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border">@log.ActionName</span>
+                            </td>
+                            <td class="text-muted">@log.TableName</td>
+                            <td class="text-muted">@log.RecordId</td>
+                            <td class="text-truncate" style="max-width:200px;">@log.NewData</td>
+                            <td class="text-muted">@log.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (totalPages > 1)
+{
+    <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination pagination-sm gap-1">
+            @if (currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index" asp-route-page="@(currentPage - 1)">
+                        <i class="bi bi-chevron-left me-1"></i>Trước
+                    </a>
+                </li>
+            }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index" asp-route-page="@i">@i</a>
+                </li>
+            }
+            @if (currentPage < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link rounded-pill px-3 fw-semibold" asp-action="Index" asp-route-page="@(currentPage + 1)">
+                        Sau<i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

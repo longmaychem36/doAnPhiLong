@@ -1,0 +1,70 @@
+KHẢO SÁT HIỆN TRẠNG VÀ NGHIỆP VỤ
+Tên đề tài: Nền tảng khám phá, chia sẻ và đánh giá sản phẩm công nghệ (Dự án: MakerSpot)
+
+Nhóm thực hiện khảo sát này trên các nền tảng sau: 
+- Website Producthunt.com và App Product Hunt
+- Website Betalist.com
+- Chuyên mục Show HN của Website Hacker News (news.ycombinator.com)
+
+1. Khảo sát nền tảng Product Hunt (Producthunt.com)
+
+Các chức năng và đặc điểm nổi bật quan sát được trên Website và App:
+Phân loại theo timeline và danh mục chuyên môn: Website cung cấp việc sắp xếp sản phẩm theo thời gian (Hôm nay, Hôm qua, Tuần này) kết hợp với các chủ đề (Topics) đa dạng như SaaS, AI, Productivity, Developer Tools tiện lợi cho việc theo dõi xu hướng.
+
+Tìm kiếm linh hoạt: Người dùng có thể tìm kiếm theo tên sản phẩm, tên nhà phát hành (Maker), hoặc từ khóa. Nền tảng cũng cung cấp bộ lọc mạnh mẽ theo chủ đề yêu thích.
+
+Trang chi tiết thiết kế tối ưu hóa hiển thị: Mọi tin đăng (sản phẩm) bao gồm tiêu đề, tagline, loạt hình ảnh/video demo sống động, ngày ra mắt, và đường link đến trang tải ứng dụng hoặc website chính. Hiển thị rõ ràng Profile của những người sáng lập (Makers) ngay trong sản phẩm.
+
+Tương tác cộng đồng sâu sắc: Nổi bật với tính năng Upvote (đẩy bài bằng số phiếu bầu) và chức năng Bình luận đa cấp (Reply thread). Người đánh giá và người phát triển có thể thao luận trực tiếp với nhau.
+
+Cá nhân hóa và kết nối: Mạng xã hội thu nhỏ cho giới công nghệ, cho phép theo dõi người dùng khác (Follow User), tạo bộ sưu tập (Collection) các sản phẩm tâm đắc và nhận thông báo theo thời gian thực (Notifications). 
+
+Ưu điểm:
+- Giao diện UI/UX rất hiện đại, trực quan, đề cao hình ảnh sản phẩm.
+- Tính cộng đồng và chuyên môn cao, được xem là "phễu" ra mắt chuẩn mực của các startup trên toàn thế giới.
+- Cơ chế cạnh tranh xếp hạng "Sản phẩm của ngày" tạo được tính tương tác (gamification) vô cùng mạnh mẽ.
+
+Hạn chế:
+- Quá nhiều thông tin, sự cạnh tranh cực kỳ lớn khiến các sản phẩm nhỏ, không có ưu thế truyền thông dễ bị "ngộp" và trôi đi nhanh chóng.
+- Tập trung vào thị trường quốc tế, chưa có tính cụ thể hóa phân loại cho các thị trường bản địa mang tính địa phương.
+
+---
+
+2. Khảo sát website BetaList (betalist.com)
+
+Các chức năng và đặc điểm nổi bật quan sát được trên Website:
+Nền tảng chuyên tập trung vào sản phẩm "Beta": Chỉ hỗ trợ đăng các startup, ứng dụng, công cụ ở khoảng thời gian trước khi ra mắt công chúng để tập hợp danh sách người dùng đầu tiên (early adopters).
+
+Thiết kế trực quan dạng lưới (Grid-based): Giao diện tập trung vào việc hiển thị các card sản phẩm lớn bao gồm một hình mẩu, tiêu đề và mô tả vô cùng ngắn gọn thay vì danh sách list dọc.
+
+Hỗ trợ thu thập email: Người dùng có thể bấm nút đăng ký trải nghiệm (Request Access) trực tiếp, giúp startup thu thập được nguồn lead đầu tiên mà không cần xây landing page phức tạp.
+
+Phân loại bộ lọc cơ bản: Có cung cấp phân chia phân mục (topics/markets) rõ ràng như Crypto, Design, Marketing, v.v.
+
+Ưu điểm:
+- Giao diện đơn giản, trực quan, nhắm đúng đối tượng mục tiêu đang săn lùng cơ hội thử nghiệm sản phẩm mới.
+- Hỗ trợ rất tốt cho nhà báo, nhà đầu tư tìm kiếm các mầm mống dự án mới.
+
+Hạn chế:
+- Chức năng tương tác qua lại kém, không có hệ thống bình luận (comment) nổi bật.
+- Chỉ tập trung vào hiển thị một chiều (Showcase), thiếu các tính năng giữ chân người sử dụng thông thường như Notification hệ thống hay Social Follow.
+
+---
+
+3. Khảo sát website và chuyên mục Show HN của Hacker News 
+
+Các đặc điểm nổi bật quan sát được:
+Định dạng bản tin tối giản hóa: Cấu trúc của định dạng forum truyền thống (chỉ có link, chữ, bình luận và tiêu đề). Các bài chia sẻ sản phẩm được nhận diện qua tiền tố "Show HN: ".
+
+Cơ chế bình chọn đơn giản: Dùng hệ thống upvote để đánh giá mức độ hấp dẫn và đẩy bài lên top của trang chủ, không màu mè.
+
+Nội dung và thảo luận chuyên sâu: Thay vì mô tả hình ảnh, người đăng phải viết một đoạn text ngắn gọn giải thích kỹ thuật và lý luận giải quyết vấn đề. Bình luận đa phần từ giới kỹ sư, đi thẳng vào các lỗ hổng kỹ thuật, trải nghiệm người dùng, hoặc mô hình kinh doanh. 
+
+Ưu điểm:
+- Ít gây phân tán sự chú ý, vô cùng tập trung vào đúng nội dung chuyên môn (performance siêu nhanh do không chứa media nặng).
+- Lượng truy cập và feedback chéo cực kỳ chất lượng do tập người dùng có trình độ chuyên môn cao trong ngành IT.
+- Trải nghiệm đồng nhất và hoàn toàn không bị thao túng bởi UI đẹp mã.
+
+Hạn chế:
+- Hoàn toàn không thân thiện với số đông người dùng thông thường vì giao diện quá hoài cổ, thiếu tính kích thích thị giác.
+- Thiếu các module hiện đại như hình ảnh/video demo, profile người dùng hay bộ nút chia sẻ hiện đại, không cho phép lưu trữ sản phẩm thành các danh mục cá nhân.

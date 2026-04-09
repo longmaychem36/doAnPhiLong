@@ -1,0 +1,74 @@
+@model MakerSpot.ViewModels.Admin.CreateModeratorViewModel
+
+@{
+    ViewData["Title"] = "Tạo Moderator";
+}
+
+<div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h1 class="h3 fw-bold mb-0">Thêm Moderator mới</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="CreateModerator" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Username" class="form-label fw-semibold"></label>
+                            <input asp-for="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label fw-semibold"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <h5 class="fw-bold border-bottom pb-2 mb-3">Phân công Chủ đề (Topics)</h5>
+                    <p class="text-muted small mb-3">Chọn các chủ đề mà Moderator này được quyền xem và kiểm duyệt sản phẩm.</p>
+                    
+                    <div class="row mb-4">
+                        @foreach (var topic in Model.AvailableTopics)
+                        {
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="SelectedTopicIds" value="@topic.Value" id="topic_@topic.Value"
+                                           @(Model.SelectedTopicIds.Contains(int.Parse(topic.Value)) ? "checked" : "")>
+                                    <label class="form-check-label" for="topic_@topic.Value">
+                                        @topic.Text
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span asp-validation-for="SelectedTopicIds" class="text-danger small d-block mb-4"></span>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-bold">Tạo tài khoản Moderator</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

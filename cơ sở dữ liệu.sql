@@ -711,5 +711,84 @@ VALUES
 );
 
 -- Gán role Moderator (RoleId = 2)
-INSERT INTO UserRoles (UserId, RoleId)
 VALUES (SCOPE_IDENTITY(), 2);
+GO
+
+/* =========================================================
+   20) TABLE: Conversations (Hệ thống Chat)
+   ========================================================= */
+CREATE TABLE Conversations (
+    ConversationId INT IDENTITY(1,1) PRIMARY KEY,
+    User1Id INT NOT NULL,
+    User2Id INT NOT NULL,
+    LastMessageAt DATETIME2 NOT NULL CONSTRAINT DF_Conversations_LastMsg DEFAULT SYSDATETIME(),
+    CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_Conversations_Created DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_Conversations_User1 FOREIGN KEY (User1Id) REFERENCES Users(UserId),
+    CONSTRAINT FK_Conversations_User2 FOREIGN KEY (User2Id) REFERENCES Users(UserId),
+    CONSTRAINT CHK_Users_Different CHECK (User1Id < User2Id) -- Đảm bảo không trùng lặp chiều chat (Vd: 1-2, không có 2-1)
+);
+GO
+
+/* =========================================================
+   21) TABLE: Messages (Nội dung Chat)
+   ========================================================= */
+CREATE TABLE Messages (
+    MessageId INT IDENTITY(1,1) PRIMARY KEY,
+    ConversationId INT NOT NULL,
+    SenderId INT NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    IsRead BIT NOT NULL CONSTRAINT DF_Messages_IsRead DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_Messages_Created DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_Messages_Conversation FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId) ON DELETE CASCADE,
+    CONSTRAINT FK_Messages_Sender FOREIGN KEY (SenderId) REFERENCES Users(UserId) 
+    -- Không dùng ON DELETE CASCADE cho SenderId vì có thể gây cycle cascade path
+);
+GO
+
+-- CHÈN DỮ LIỆU MẪU CHO CHAT
+INSERT INTO Conversations (User1Id, User2Id, LastMessageAt)
+VALUES (1, 2, SYSDATETIME());
+GO
+
+DECLARE @ConvId INT = SCOPE_IDENTITY();
+IF @ConvId IS NOT NULL
+BEGIN
+    INSERT INTO Messages (ConversationId, SenderId, Content, IsRead, CreatedAt)
+    VALUES 
+    (@ConvId, 1, N'Chào bạn, tính năng xịn quá!', 1, DATEADD(minute, -10, SYSDATETIME())),
+    (@ConvId, 2, N'Cảm ơn bạn nhé!', 0, SYSDATETIME());
+END
+GO
+
+/* =========================================================
+   Phase 13) TABLE: ForumPosts — Diễn đàn thảo luận
+   ========================================================= */
+CREATE TABLE ForumPosts (
+    ForumPostId INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL,
+    Title NVARCHAR(200) NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    Tag NVARCHAR(50) NULL,
+    ViewCount INT NOT NULL CONSTRAINT DF_ForumPosts_ViewCount DEFAULT 0,
+    IsPinned BIT NOT NULL CONSTRAINT DF_ForumPosts_IsPinned DEFAULT 0,
+    IsLocked BIT NOT NULL CONSTRAINT DF_ForumPosts_IsLocked DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_ForumPosts_CreatedAt DEFAULT SYSDATETIME(),
+    UpdatedAt DATETIME2 NULL,
+    CONSTRAINT FK_ForumPosts_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
+);
+GO
+
+/* =========================================================
+   Phase 13) TABLE: ForumReplies — Trả lời bài viết forum
+   ========================================================= */
+CREATE TABLE ForumReplies (
+    ForumReplyId INT IDENTITY(1,1) PRIMARY KEY,
+    ForumPostId INT NOT NULL,
+    UserId INT NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    IsDeleted BIT NOT NULL CONSTRAINT DF_ForumReplies_IsDeleted DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_ForumReplies_CreatedAt DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_ForumReplies_ForumPosts FOREIGN KEY (ForumPostId) REFERENCES ForumPosts(ForumPostId) ON DELETE CASCADE,
+    CONSTRAINT FK_ForumReplies_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
+);
+GO

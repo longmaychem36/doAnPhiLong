@@ -1,0 +1,370 @@
+@model IEnumerable<MakerSpot.Models.Conversation>
+@{
+    ViewData["Title"] = "Tin nhắn";
+    var currentUserId = (int)ViewBag.CurrentUserId;
+    var activeConvId = (int?)ViewBag.ActiveConvId;
+    string activeBg = "bg-light";
+}
+
+<style>
+    /* Bỏ padding của container để chat box full màn hình trừ header */
+    main > .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .chat-container-wrapper {
+        height: calc(100vh - 65px); 
+        display: flex;
+        background: #fff;
+        margin-top: -1.5rem;
+    }
+    
+    .chat-sidebar {
+        width: 320px;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        background: #f8f9fa;
+    }
+
+    .chat-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+    }
+
+    .chat-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .chat-item {
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f1f1;
+        color: inherit;
+        text-decoration: none;
+        transition: background .2s;
+    }
+
+    .chat-item:hover { background: #f1f5f9; }
+    .chat-item.active { background: #e2e8f0; border-left: 3px solid var(--ph-orange); }
+
+    .chat-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .chat-topbar {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.02);
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #f8fafc;
+    }
+
+    .msg-bubble {
+        max-width: 65%;
+        padding: 10px 16px;
+        border-radius: 18px;
+        font-size: .95rem;
+        line-height: 1.4;
+        word-break: break-word;
+        position: relative;
+    }
+
+    .msg-me {
+        align-self: flex-end;
+        background: var(--ph-orange);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .msg-them {
+        align-self: flex-start;
+        background: #e2e8f0;
+        color: #1e293b;
+        border-bottom-left-radius: 4px;
+    }
+
+    .msg-time {
+        font-size: .7rem;
+        color: #94a3b8;
+        margin-top: 4px;
+        display: block;
+    }
+    
+    .msg-me .msg-time {
+        color: rgba(255,255,255,.8);
+        text-align: right;
+    }
+
+    .chat-input {
+        padding: 15px 20px;
+        border-top: 1px solid #e5e7eb;
+        background: #fff;
+        display: flex;
+        gap: 15px;
+    }
+
+    .chat-input input {
+        flex: 1;
+        border-radius: 20px;
+        padding: 10px 20px;
+        border: 1px solid #cbd5e1;
+        outline: none;
+    }
+
+    .chat-input input:focus { border-color: var(--ph-orange); }
+
+    .btn-send {
+        background: var(--ph-orange);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity .2s;
+    }
+    .btn-send:hover { opacity: .85; }
+    
+    /* Empty State */
+    .empty-chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="chat-container-wrapper container-fluid p-0">
+    <!-- Cột trái: Danh sách Chat -->
+    <div class="chat-sidebar">
+        <div class="p-3 border-bottom bg-white">
+            <h4 class="fw-bold mb-0">Hộp thư</h4>
+        </div>
+        <div class="chat-list">
+            @if (!Model.Any())
+            {
+                <div class="text-center p-4 text-muted small">
+                    <i class="bi bi-chat-square-dots mb-2 fs-3"></i>
+                    <p>Chưa có cuộc trò chuyện nào.<br/>Hãy vào Profile của ai đó và bấm Nhắn tin.</p>
+                </div>
+            }
+            @foreach (var c in Model)
+            {
+                var otherUser = c.GetOtherUser(currentUserId);
+                var lastMsg = c.Messages.FirstOrDefault();
+                string avatar = string.IsNullOrEmpty(otherUser.AvatarUrl) ? "/images/default-avatar.png" : otherUser.AvatarUrl;
+                
+                <a href="/Chat?convId=@c.ConversationId" class="chat-item @(activeConvId == c.ConversationId ? "active" : "")">
+                    <img src="@avatar" class="chat-avatar shadow-sm" alt="@otherUser.FullName" onerror="this.src='/images/default-avatar.png';" />
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark text-truncate">@otherUser.FullName</span>
+                            @if(lastMsg != null)
+                            {
+                                <span class="small text-muted" style="font-size:.7rem;">@lastMsg.CreatedAt.ToString("HH:mm")</span>
+                            }
+                        </div>
+                        <div class="small text-truncate @(lastMsg != null && !lastMsg.IsRead && lastMsg.SenderId != currentUserId ? "fw-bold text-dark" : "text-muted")">
+                            @(lastMsg != null ? (lastMsg.SenderId == currentUserId ? "Bạn: " : "") + lastMsg.Content : "Bắt đầu trò chuyện")
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Cột phải: Khung chat chính -->
+    <div class="chat-main">
+        @if (activeConvId.HasValue)
+        {
+            var activeConv = Model.FirstOrDefault(c => c.ConversationId == activeConvId.Value);
+            if(activeConv != null)
+            {
+                var targetUser = activeConv.GetOtherUser(currentUserId);
+                string tAvatar = string.IsNullOrEmpty(targetUser.AvatarUrl) ? "/images/default-avatar.png" : targetUser.AvatarUrl;
+
+                <div class="chat-topbar">
+                    <img src="@tAvatar" class="chat-avatar" style="width:40px;height:40px;" alt="@targetUser.FullName" onerror="this.src='/images/default-avatar.png';" />
+                    <div>
+                        <div class="fw-bold fs-5">@targetUser.FullName</div>
+                        <a href="/@@@targetUser.Username" class="small text-muted text-decoration-none">@@@targetUser.Username</a>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatArea">
+                    <div class="text-center my-4">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    </div>
+                    <!-- Tin nhắn sẽ được load bằng AJAX -->
+                </div>
+
+                <div class="chat-input align-items-center">
+                    <input type="file" id="chatImageInput" accept="image/*" style="display:none;" />
+                    <button class="btn btn-light rounded-circle text-muted" onclick="document.getElementById('chatImageInput').click()" style="width:40px;height:40px;padding:0;">
+                        <i class="bi bi-image fs-5"></i>
+                    </button>
+                    <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." autocomplete="off" class="flex-grow-1" />
+                    <button id="btnSend" class="btn-send"><i class="bi bi-send-fill"></i></button>
+                </div>
+                
+                <!-- Script cho phòng chat -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+                <script>
+                   document.addEventListener('DOMContentLoaded', () => {
+                       const convId = @activeConvId.Value;
+                       const currentUserId = @currentUserId;
+                       const chatArea = document.getElementById('chatArea');
+                       const input = document.getElementById('chatInput');
+                       const btnSend = document.getElementById('btnSend');
+                       const fileInput = document.getElementById('chatImageInput');
+
+                       // 1. Load lịch sử tin nhắn
+                       fetch(`/Chat/GetMessages/${convId}`)
+                           .then(r => r.json())
+                           .then(messages => {
+                               chatArea.innerHTML = '';
+                               messages.forEach(msg => appendMessage(msg));
+                               scrollToBottom();
+                           });
+
+                       // 2. Setup SignalR
+                       const connection = new signalR.HubConnectionBuilder()
+                           .withUrl("/chatHub")
+                           .build();
+
+                       connection.on("ReceiveMessage", function (msg) {
+                           if(msg.conversationId === convId) {
+                               appendMessage(msg);
+                               scrollToBottom();
+                           }
+                       });
+
+                       connection.start()
+                           .then(() => {
+                               connection.invoke("JoinConversation", convId);
+                           })
+                           .catch(err => console.error(err.toString()));
+
+                       // Upload Image Logic
+                       fileInput.addEventListener('change', function() {
+                           if (!this.files.length) return;
+                           const file = this.files[0];
+                           const formData = new FormData();
+                           formData.append('file', file);
+                           
+                           // Disable text input while uploading
+                           input.disabled = true;
+                           input.placeholder = "Đang tải ảnh lên...";
+
+                           fetch('/Chat/UploadImage', { method: 'POST', body: formData })
+                               .then(r => r.json())
+                               .then(res => {
+                                   input.disabled = false;
+                                   input.placeholder = "Nhập tin nhắn...";
+                                   if(res.imageUrl) {
+                                       connection.invoke("SendMessage", convId, "Đã gửi một ảnh", res.imageUrl, null)
+                                            .catch(err => console.error(err.toString()));
+                                   } else {
+                                       alert(res.error || "Lỗi upload ảnh");
+                                   }
+                                   fileInput.value = ""; // reset
+                               })
+                               .catch(err => {
+                                   input.disabled = false;
+                                   input.placeholder = "Nhập tin nhắn...";
+                                   alert('Có lỗi xảy ra khi tải ảnh');
+                               });
+                       });
+
+                       // 3. Gửi tin nhắn text
+                       function sendMessage() {
+                           const text = input.value.trim();
+                           if(text === '') return;
+                           
+                           connection.invoke("SendMessage", convId, text, null, null)
+                               .catch(err => console.error(err.toString()));
+                           
+                           input.value = '';
+                           input.focus();
+                       }
+
+                       btnSend.addEventListener('click', sendMessage);
+                       input.addEventListener('keypress', function(e) {
+                           if(e.key === 'Enter') sendMessage();
+                       });
+
+                       function appendMessage(msg) {
+                           const isMe = msg.senderId === currentUserId;
+                           const cls = isMe ? 'msg-me' : 'msg-them';
+                           const div = document.createElement('div');
+                           div.className = `msg-bubble ${cls}`;
+                           
+                           let contentHtml = msg.content;
+                           // Nếu có ảnh
+                           if(msg.imageUrl) {
+                               contentHtml = `<a href="${msg.imageUrl}" target="_blank"><img src="${msg.imageUrl}" class="img-fluid rounded border mb-1" style="max-height:200px; display:block;" /></a>` + contentHtml;
+                           }
+                           // Nếu có chia sẻ sản phẩm
+                           if(msg.sharedProduct) {
+                               const p = msg.sharedProduct;
+                               const logo = p.logoUrl || '/images/default-logo.png';
+                               contentHtml += `
+                               <div class="card mt-2 border-0 shadow-sm" style="max-width:250px; background: rgba(255,255,255,0.9); color:#333;">
+                                  <a href="/Product/Detail/${p.productId}" class="text-decoration-none text-dark d-flex p-2 align-items-center gap-2">
+                                      <img src="${logo}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;" />
+                                      <div class="min-w-0 flex-grow-1">
+                                          <div class="fw-bold text-truncate" style="font-size:0.9rem;">${p.productName}</div>
+                                          <div class="text-muted text-truncate" style="font-size:0.75rem;">${p.tagline}</div>
+                                      </div>
+                                  </a>
+                               </div>`;
+                           }
+
+                           div.innerHTML = `${contentHtml} <span class="msg-time">${msg.createdAt}</span>`;
+                           chatArea.appendChild(div);
+                       }
+
+                       function scrollToBottom() {
+                           chatArea.scrollTop = chatArea.scrollHeight;
+                       }
+                   });
+                </script>
+            }
+        }
+        else
+        {
+            <div class="empty-chat text-center">
+                <i class="bi bi-chat-heart text-muted mb-3" style="font-size: 5rem; opacity: 0.5;"></i>
+                <h4>Kết nối với các MAKER</h4>
+                <p>Chọn một cuộc trò chuyện để bắt đầu gửi tin nhắn.</p>
+            </div>
+        }
+    </div>
+</div>

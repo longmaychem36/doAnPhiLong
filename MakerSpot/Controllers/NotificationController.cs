@@ -53,7 +53,7 @@ namespace MakerSpot.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST: /Notification/MarkAllAsRead
+        // POST: /Notification/MarkAllAsRead — Cập nhật trực tiếp bằng SQL, không load entities
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkAllAsRead()
@@ -61,16 +61,10 @@ namespace MakerSpot.Controllers
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var unread = await _context.Notifications
+            // ExecuteUpdateAsync chạy 1 câu UPDATE SET IsRead=1 trực tiếp trên DB
+            await _context.Notifications
                 .Where(n => n.UserId == userId && !n.IsRead)
-                .ToListAsync();
-
-            foreach (var n in unread)
-            {
-                n.IsRead = true;
-            }
-
-            await _context.SaveChangesAsync();
+                .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
 
             return RedirectToAction("Index");
         }

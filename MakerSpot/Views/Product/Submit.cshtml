@@ -13,7 +13,7 @@
                     <p class="text-muted">Sản phẩm sau khi nộp sẽ ở trạng thái chờ duyệt (Pending).</p>
                 </div>
 
-                <form asp-action="Submit" method="post">
+                <form asp-action="Submit" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
 
                     <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin cơ bản</h5>
@@ -47,9 +47,19 @@
                     <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4">Liên kết & Media</h5>
 
                     <div class="mb-3">
-                        <label asp-for="LogoUrl" class="form-label fw-semibold"></label>
-                        <input asp-for="LogoUrl" class="form-control" placeholder="https://example.com/logo.png" />
-                        <span asp-validation-for="LogoUrl" class="text-danger small"></span>
+                        <label asp-for="LogoFile" class="form-label fw-semibold"></label>
+                        <input asp-for="LogoFile" type="file" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp" />
+                        <span asp-validation-for="LogoFile" class="text-danger small"></span>
+                        <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i>Hỗ trợ JPG, PNG, WEBP. Tối đa 2MB. Ảnh sẽ được tự động crop vuông.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ProductImages" class="form-label fw-semibold"></label>
+                        <input asp-for="ProductImages" type="file" class="form-control" accept="image/*" multiple id="productImagesInput" />
+                        <span asp-validation-for="ProductImages" class="text-danger small"></span>
+                        <div class="form-text mt-2"><i class="bi bi-images me-1"></i>Chọn tối đa 10 ảnh minh họa sản phẩm (JPG, PNG, WEBP, GIF). Mỗi ảnh tối đa 5MB.</div>
+                        <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        <div id="imageCountInfo" class="text-muted mt-1" style="font-size:.8rem;"></div>
                     </div>
 
                     <div class="row mb-4">
@@ -133,6 +143,27 @@
 
         $('#Slug').on('keyup', function(){
              $(this).data('auto', false);
+        });
+
+        // Image preview for product images
+        $('#productImagesInput').on('change', function() {
+            var container = $('#imagePreviewContainer');
+            var info = $('#imageCountInfo');
+            container.empty();
+            var files = this.files;
+            if (files.length > 10) {
+                info.html('<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>Bạn chỉ được chọn tối đa 10 ảnh. Hiện tại: ' + files.length + ' ảnh.</span>');
+            } else {
+                info.text('Đã chọn ' + files.length + '/10 ảnh');
+            }
+            var limit = Math.min(files.length, 10);
+            for (var i = 0; i < limit; i++) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    container.append('<img src="' + e.target.result + '" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #e5e7eb;" />');
+                };
+                reader.readAsDataURL(files[i]);
+            }
         });
     </script>
 }

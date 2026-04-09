@@ -4,9 +4,12 @@
     ViewData["Title"] = "Quản lý Users";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
     <h1 class="h3 fw-bold mb-0"><i class="bi bi-people me-2"></i>Quản lý Users</h1>
-    <span class="badge bg-primary fs-6">@Model.Count() users</span>
+    <div>
+        <span class="badge bg-primary fs-6 me-2">@Model.Count() users</span>
+        <a asp-action="CreateModerator" class="btn btn-outline-primary fw-semibold"><i class="bi bi-person-plus me-1"></i>Tạo Moderator</a>
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -21,6 +24,7 @@
                     <th>Roles</th>
                     <th>Trạng thái</th>
                     <th>Ngày tạo</th>
+                    <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +62,18 @@
                             }
                         </td>
                         <td class="text-muted small">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (user.Username != "admin" && user.Username != User.Identity.Name)
+                            {
+                                <form asp-action="ToggleLock" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@user.UserId" />
+                                    <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success")" onclick="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái tài khoản này?');">
+                                        @if(user.IsActive){ <text><i class="bi bi-lock me-1"></i>Khóa</text> }
+                                        else { <text><i class="bi bi-unlock me-1"></i>Mở khóa</text> }
+                                    </button>
+                                </form>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

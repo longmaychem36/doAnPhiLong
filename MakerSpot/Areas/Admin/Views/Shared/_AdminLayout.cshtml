@@ -98,6 +98,17 @@
                         <i class="bi bi-people"></i> Quản lý Users
                     </a>
                 }
+                <a asp-area="Admin" asp-controller="Reports" asp-action="Index"
+                   class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reports" ? "active" : "")">
+                    <i class="bi bi-flag"></i> Báo cáo vi phạm
+                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-area="Admin" asp-controller="AuditLogs" asp-action="Index"
+                       class="admin-nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AuditLogs" ? "active" : "")">
+                        <i class="bi bi-journal-text"></i> Nhật ký hệ thống
+                    </a>
+                }
             </div>
         </nav>
 
@@ -113,9 +124,11 @@
                 <div class="flex-grow-1 min-w-0">
                     <div class="text-white fw-semibold" style="font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@User.Identity.Name</div>
                 </div>
-                <a asp-area="" asp-controller="Auth" asp-action="Logout" class="text-muted" title="Đăng xuất">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
+                <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="m-0 p-0">
+                    <button type="submit" class="text-muted bg-transparent p-0 m-0" style="border:none;" title="Đăng xuất">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

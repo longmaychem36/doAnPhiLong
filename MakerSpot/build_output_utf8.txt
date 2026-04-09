@@ -1,0 +1,33 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+E:\doAnPhiLong\MakerSpot\Views\Shared\_Layout.cshtml(94,107): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\AuditLogs\Index.cshtml(4,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\AuditLogs\Index.cshtml(5,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Controllers\ProductsController.cs(106,90): error CS0136: A local or parameter named 'uid' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Products\List.cshtml(148,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Products\List.cshtml(149,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Product\Detail.cshtml(120,88): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Users\Index.cshtml(66,79): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Reports\Index.cshtml(5,59): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Chat\Index.cshtml(6,12): warning CS0219: The variable 'activeBg' is assigned but its value is never used [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Forum\Index.cshtml(6,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Forum\Index.cshtml(7,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+
+Build FAILED.
+
+E:\doAnPhiLong\MakerSpot\Views\Shared\_Layout.cshtml(94,107): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\AuditLogs\Index.cshtml(4,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\AuditLogs\Index.cshtml(5,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Products\List.cshtml(148,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Products\List.cshtml(149,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Product\Detail.cshtml(120,88): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Users\Index.cshtml(66,79): warning CS8602: Dereference of a possibly null reference. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Views\Reports\Index.cshtml(5,59): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Chat\Index.cshtml(6,12): warning CS0219: The variable 'activeBg' is assigned but its value is never used [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Forum\Index.cshtml(6,57): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Views\Forum\Index.cshtml(7,55): warning CS8605: Unboxing a possibly null value. [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+E:\doAnPhiLong\MakerSpot\Areas\Admin\Controllers\ProductsController.cs(106,90): error CS0136: A local or parameter named 'uid' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter [E:\doAnPhiLong\MakerSpot\MakerSpot.csproj]
+    11 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:05.80
